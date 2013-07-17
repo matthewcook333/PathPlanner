@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * 
  */
 package PathPlanner;
 
@@ -81,12 +80,10 @@ public class AStarPlanner {
      *  This means that after 12 hours it can get the full reward again
      *  for revisiting the same cell spatially.
      *  NOTE: this is a compounding decay, which means it can go negative
-     *  if the cell has been visited multiple times in last 12 hours
+     *  if the cell has been visited multiple times in last 12 hours.
      */
     public static double addObjective(OceanPath currentPath, OceanCell neighbor) {
         double tempScore = neighbor.getTempErr();
-
- 
         double decayScore = neighbor.getTempErr()/12;
         for (int i = currentPath.size()-1; i >= 0; --i) {
             double decayedScore = neighbor.getTempErr();
@@ -102,29 +99,28 @@ public class AStarPlanner {
     }
     
     /* 
-     * A* Search path planning algorithm. It takes in
-     * 7 inputs: the x, y, and z coordinates of the start and end
-     * locations, and the maximum time the mission can take.
-     * The path planner looks at all the neighbors 
-     * and finds the most feasible path given the 
-     * data from ROMS on the currents. The objective of the path planner
-     * is to maximize the change in temperature from waypoint to waypoint.
+     * Method: AStar
+     * 
+     * Input: OceanCell that is the start, OceanGrid for searching on, and
+     *  a double which is the max mission length.
+     * 
+     * Output: OceanPath that holds the cells of the final path.
+     * 
+     * Details: This A* path planning algorithm does not take in a destination
+     *  as it just finds the optimal path to gather the maximum objective 
+     *  within the grid given a start location.
      * 
      */
     public static OceanPath AStar(OceanCell start, OceanGrid grid, double missionLength) {
-        
-        // Print out the net distance to get an idea of how far the end is from
-        // the start location
-        //double netDistance = AUV.distance(xStart, yStart, xEnd, yEnd, 'K');
-        //netDistance *= 1000;
-        //System.out.println("The net distance is " + netDistance + " meters");
-        boolean record = Planner.mathematica;
         
         double timeInterval = Planner.timeInterval;
         double startTime = Planner.hourStartIndex*timeInterval;
         double maxMissionTime = startTime + missionLength;
         
-        // priority queue to hold the OceanCells
+        // priority queue to hold the OceanPaths
+        // The top of the queue is the OceanPath with the highest f score, 
+        // which is the sum of the objective gathered so far with the heuristic
+        // for predicted objective remaining
         PriorityQueue<OceanPath> Q = new PriorityQueue<>(10,
                 new Comparator<OceanPath>() {
                     @Override
@@ -143,30 +139,29 @@ public class AStarPlanner {
                     }
         });
         
+        // create the start OceanPath to enqueue
         OceanPath startPath = new OceanPath();
         startPath.add(start);
         startPath.latestTime = startTime;
         Q.add(startPath);
 
-        //initialize what the maximum delta is to -1
-        //double maxDelta = -1;
-        // counter for debugging
-        //int count = 0;
-
+        // while we have unexplored paths, continue searching
         while (!Q.isEmpty()) {
-            //OceanCell currentCell = (OceanCell) Q.dequeue();
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
-            //System.out.println(currentPath);
             
+            // if we have more than one cell, we check whether we have moved
+            // onto the next timestep
             if (currentPath.size() > 1) {
                 int time = (int)Math.floor(currentPath.latestTime / timeInterval);
+                // if there isn't enough time data, just use the latest one
                 if (time > Planner.hourEndIndex) {
                     System.out.println("Need more time data! Path Planning"
                             + " will just use data from latest timestep");
                     time = Planner.hourEndIndex;
                 }
-                // if we moved onto the next timestep 
+                // if we moved onto the next timestep, we get the cell data
+                // associated with that space and time              
                 if (time > currentPath.get(currentPath.size()-2).getTime()) {
                     OceanCell sameCell = grid.getCell(time, 
                             currentCell.getDepth(), currentCell.getLat(),
@@ -175,8 +170,8 @@ public class AStarPlanner {
                     currentCell = sameCell;
                 }  
             }
-            
-            if (record) {
+            // Record path if tracing paths in mathematica
+            if (Planner.mathematica) {
                 Planner.recordInstance(currentPath.path, false, grid);
             }
 
@@ -184,9 +179,11 @@ public class AStarPlanner {
             int z = currentCell.getDepth();
             int x = currentCell.getLat();
             int y = currentCell.getLon();         
-            
+            // initialize whether we have more feasible neighbors to travel to
+            // on this path to false
             boolean moreNeighbors = false;
             for (int dir = 0; dir < Planner.numDirections; dir++) {
+                // find grid indices of the neighbors
                 int dirx = Planner.directions[dir * 2];
                 int diry = Planner.directions[dir * 2 + 1];
                 int newx = x + dirx;
@@ -207,14 +204,10 @@ public class AStarPlanner {
                         continue;
                     }                  
                     
+                    // if we can travel to this neighbor within the time limit,
+                    // create a new path including this neighbor and enqueue
+                    // it in the priority queue
                     if ((currentPath.latestTime + timeTaken) <= maxMissionTime) {
-                        /*
-                        ArrayList<OceanCell> newPath = new ArrayList<>();
-                        for (int i = 0; i < currentPath.size(); ++i) {
-                            OceanCell copy = new OceanCell(currentPath.get(i));
-                            newPath.add(copy);
-                        }
-                        */
                         moreNeighbors = true;
                         OceanPath newPath = new OceanPath(currentPath);
                         newPath.add(neighbor);
@@ -223,22 +216,23 @@ public class AStarPlanner {
                         newPath.fScore = newPath.gScore + objectiveEstimate(newPath, grid);
                         Q.add(newPath);
                     }      
-                 }
+                }
             }
-            // Reached the destination within a minute of max time alotted
-            //if ((maxMissionTime-2000) <= currentPath.latestTime
-            //        && currentPath.latestTime <= maxMissionTime) {
+            // If we have run out of neighbors to travel to, meaning we have
+            // found the optimal path, return the path
             if (!moreNeighbors) {
-                if(record) {
+                // if we are recording, record the final path
+                if(Planner.mathematica) {
                     Planner.recordInstance(currentPath.path, true, grid);
                     Planner.recordHistory(new File(Planner.historyFile));
                 }
+                // Fill the correct information into the OceanCells in the path
                 currentPath.recordData(grid);
                 return currentPath;
             }
-        }
-    System.out.println("There are no possible paths to this destination");
-    return null;
+        }   
+        // return null if there are no possible paths
+        System.out.println("There are no possible paths to this destination");
+        return null;
     }
-    
 }
