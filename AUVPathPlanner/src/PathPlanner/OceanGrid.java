@@ -428,73 +428,70 @@ public class OceanGrid {
             System.out.println("Reading data....");
             
             int[] shape = {timeDim, depthDim, latDim, lonDim};
-            //int[] shape = tempVar.getShape();
-            //int recLen = shape[0]; // number of times
             int[] origin = {0, 0, lowBounds[0], lowBounds[1]};
-            //int[] origin = new int[4];
-            //shape[0] = 1; // only one rec per read
             
-            //System.out.println("Number of time periods in file: " + recLen);
+            // read 3D array for that index
+            Array tempArray, salinArray, uArray, vArray;
+            Array tempErrArray, salinErrArray, uErrArray, vErrArray;
 
-            // loop over the rec dimension
-            //for (int rec = 0; rec < recLen; rec++) {
-                //origin[0] = rec;  // read this index
+            tempArray = (Array) tempVar.read(origin, shape);
+            salinArray = (Array) salinVar.read(origin, shape);
+            uArray = (Array) uVar.read(origin, shape);
+            vArray = (Array) vVar.read(origin, shape);
 
-                // read 3D array for that index
-                Array tempArray, salinArray, uArray, vArray;
-                Array tempErrArray, salinErrArray, uErrArray, vErrArray;
-                
-                tempArray = (Array) tempVar.read(origin, shape);
-                salinArray = (Array) salinVar.read(origin, shape);
-                uArray = (Array) uVar.read(origin, shape);
-                vArray = (Array) vVar.read(origin, shape);
-                
-                tempErrArray = (Array) tempVarErr.read(origin, shape);
-                salinErrArray = (Array) salinVarErr.read(origin, shape);
-                uErrArray = (Array) uVarErr.read(origin, shape);
-                vErrArray = (Array) vVarErr.read(origin, shape);
-                
-                if (tempArray.getElementType() == float.class) {
-                    float[][][][] tempFloat = (float[][][][]) tempArray.copyToNDJavaArray();
-                    float[][][][] salinFloat = (float[][][][]) salinArray.copyToNDJavaArray();
-                    float[][][][] uFloat = (float[][][][]) uArray.copyToNDJavaArray();
-                    float[][][][] vFloat = (float[][][][]) vArray.copyToNDJavaArray();
-                    temp = new double[timeDim][depthDim][latDim][lonDim];
-                    salin = new double[timeDim][depthDim][latDim][lonDim];
-                    uCurrents = new double[timeDim][depthDim][latDim][lonDim];
-                    vCurrents = new double[timeDim][depthDim][latDim][lonDim];
-                    for (int t = 0; t < timeDim; ++t) {
-                        for (int i = 0; i < latDim; ++i) {
-                            for (int j = 0; j < lonDim; ++j) {
-                                for (int k = 0; k < depthDim; ++k) {
-                                    temp[t][k][i][j] = (double)tempFloat[t][k][i][j];
-                                    salin[t][k][i][j] = (double)salinFloat[t][k][i][j];
-                                    uCurrents[t][k][i][j] = (double)uFloat[t][k][i][j];
-                                    vCurrents[t][k][i][j] = (double)vFloat[t][k][i][j];  
-                                }
+            tempErrArray = (Array) tempVarErr.read(origin, shape);
+            salinErrArray = (Array) salinVarErr.read(origin, shape);
+            uErrArray = (Array) uVarErr.read(origin, shape);
+            vErrArray = (Array) vVarErr.read(origin, shape);
+
+            if (tempArray.getElementType() == float.class) {
+                float[][][][] tempFloat = (float[][][][]) tempArray.copyToNDJavaArray();
+                float[][][][] salinFloat = (float[][][][]) salinArray.copyToNDJavaArray();
+                float[][][][] uFloat = (float[][][][]) uArray.copyToNDJavaArray();
+                float[][][][] vFloat = (float[][][][]) vArray.copyToNDJavaArray();
+                temp = new double[timeDim][depthDim][latDim][lonDim];
+                salin = new double[timeDim][depthDim][latDim][lonDim];
+                uCurrents = new double[timeDim][depthDim][latDim][lonDim];
+                vCurrents = new double[timeDim][depthDim][latDim][lonDim];
+                for (int t = 0; t < timeDim; ++t) {
+                    for (int i = 0; i < latDim; ++i) {
+                        for (int j = 0; j < lonDim; ++j) {
+                            for (int k = 0; k < depthDim; ++k) {
+                                temp[t][k][i][j] = (double)tempFloat[t][k][i][j];
+                                salin[t][k][i][j] = (double)salinFloat[t][k][i][j];
+                                uCurrents[t][k][i][j] = (double)uFloat[t][k][i][j];
+                                vCurrents[t][k][i][j] = (double)vFloat[t][k][i][j];  
                             }
-                        }  
-                    }
+                        }
+                    }  
                 }
-                else {
-                    temp = (double[][][][]) tempArray.copyToNDJavaArray();
-                    salin = (double[][][][]) salinArray.copyToNDJavaArray();
-                    uCurrents = (double[][][][]) uArray.copyToNDJavaArray();
-                    vCurrents = (double[][][][]) vArray.copyToNDJavaArray();
-                }
-                
-                tempErr = (double[][][][]) tempErrArray.copyToNDJavaArray();
-                salinErr = (double[][][][]) salinErrArray.copyToNDJavaArray();
-                uCurrentsErr = (double[][][][]) uErrArray.copyToNDJavaArray();
-                vCurrentsErr = (double[][][][]) vErrArray.copyToNDJavaArray();
-            //}
+            }
+            else {
+                temp = (double[][][][]) tempArray.copyToNDJavaArray();
+                salin = (double[][][][]) salinArray.copyToNDJavaArray();
+                uCurrents = (double[][][][]) uArray.copyToNDJavaArray();
+                vCurrents = (double[][][][]) vArray.copyToNDJavaArray();
+            }
 
-            // The file is closed no matter what by putting inside a try/catch block.
+            tempErr = (double[][][][]) tempErrArray.copyToNDJavaArray();
+            salinErr = (double[][][][]) salinErrArray.copyToNDJavaArray();
+            uCurrentsErr = (double[][][][]) uErrArray.copyToNDJavaArray();
+            vCurrentsErr = (double[][][][]) vErrArray.copyToNDJavaArray();
+        
+
+       // The file is closed no matter what by putting inside a try/catch block.
         } catch (java.io.IOException | InvalidRangeException e) {
             e.printStackTrace();
             return;
         } finally {
             if (dataFile != null) {
+                try {
+                    dataFile.close();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+            if (errFile != null) {
                 try {
                     dataFile.close();
                 } catch (IOException ioe) {
