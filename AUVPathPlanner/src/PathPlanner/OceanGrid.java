@@ -20,7 +20,7 @@ import ucar.nc2.dt.grid.GridCoordSys;
  * 
  * Class: OceanGrid
  * 
- * Description: This class is a class that is primarily a 4-D array
+ * Description: This class is used primarily as a 4-D array
  * used to hold objects of the class OceanCell. This class is used to read
  * in netCDF files in java arrays for easier handling and access.
  */
@@ -40,35 +40,33 @@ public class OceanGrid {
     static double[][][][] uCurrentsErr;
     static double[][][][] vCurrentsErr;
     
-    // The dimensions of the OceanGrid
-    public int NLAT;
-    public int NLON;
-    public int NDEPTH;
-    public int NTIME;
+    int NDEPTH = depArray.length;
+    int NLAT = latArray.length;
+    int NLON = lonArray.length;
+    int NTIME = timeArray.length;
     
     //4-D array which is the grid to hold the OceanCells
     public OceanCell[][][][] cellGrid = null;
     
-
     
     // returns the length of this OceanGrid 
     public int getLatLength() {
-        return NLAT;
+        return latArray.length;
     }
     
     // returns the length of this OceanGrid 
     public int getLonLength() {
-        return NLON;
+        return lonArray.length;
     }
     
     
-    // Zero argument constructor.
+    // Two argument constructor.
     // If used, need to manually fill in grid with specified values
     public OceanGrid(int lat, int lon) {
-        NTIME = timeArray.length;
         NDEPTH = depArray.length;
         NLAT = lat;
         NLON = lon;
+        NTIME = timeArray.length;
         cellGrid = new OceanCell[NTIME][NDEPTH][NLAT][NLON];
     }
     
