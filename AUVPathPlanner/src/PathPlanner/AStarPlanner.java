@@ -14,9 +14,29 @@ import java.util.PriorityQueue;
  * @author atthewco
  */
 public class AStarPlanner {
-        
+    
+    /*
+     * Method: objectiveEstimate
+     * 
+     * Input: OceanPath that is the current path, and OceanGrid
+     * 
+     * Output: a double for the estimate of objective remaining on the path
+     * 
+     * Details: The objective function is currently maximizing the uncertainty
+     *  in temperature information.
+     *  This method uses the remaining time left for the mission along
+     *  with the current number of cells travels to estimate how many cells 
+     *  the path can still go. 
+     *  Currently the estimation for how much temperature uncertainty the AUV
+     *  can gather is based on the average temperature uncertainty in the grid
+     *  multiplied by some weighting. A weighting of 0 would mean to not
+     *  consider the heuristic at all, and a higher weighting would make the
+     *  heuristic more important in comparing paths, thus making the path planner
+     *  explore more paths (become close to a breadth first search)
+     */
     public static double objectiveEstimate(OceanPath currentPath, OceanGrid grid) {
         /*
+         * TODO: Make the heuristic better by looking at neighbors
         double heuristicRate = 0;
         OceanCell currentCell = currentPath.get(currentPath.size()-1);
         
@@ -43,13 +63,30 @@ public class AStarPlanner {
         return predScore;
     }
     
+    /*
+     * Method: addObjective
+     * 
+     * Input: OceanPath for the current path, OceanCell for the neighbor being
+     *  added.
+     * 
+     * Output: a double representing the additional objective fromm adding
+     *  this neighbor
+     * 
+     * Details: The objective currently being considered is temperature
+     *  uncertainty. In order to discourage visiting the same cells spatially
+     *  within a short timespan, there is a linear decay for the objective for 
+     *  revisiting the same cell in space within the last 12 hours.
+     *  i.e. if the path makes a u-turn, it will only get 1/12 or 2/12 of the 
+     *  reward for going there, depending on how long it takes. 
+     *  This means that after 12 hours it can get the full reward again
+     *  for revisiting the same cell spatially.
+     *  NOTE: this is a compounding decay, which means it can go negative
+     *  if the cell has been visited multiple times in last 12 hours
+     */
     public static double addObjective(OceanPath currentPath, OceanCell neighbor) {
         double tempScore = neighbor.getTempErr();
 
-        // lower score added if cell was visited recently.
-        // receive full reward if cell has not been visited within 12 hours
-        // NOTE: this is a compounding decay, which means it can go negative
-        // if the cell has been visited multiple times in last 12 hours
+ 
         double decayScore = neighbor.getTempErr()/12;
         for (int i = currentPath.size()-1; i >= 0; --i) {
             double decayedScore = neighbor.getTempErr();

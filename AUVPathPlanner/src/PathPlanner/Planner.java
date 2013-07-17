@@ -176,6 +176,15 @@ public class Planner {
         return path.path;
     }
     
+    /*
+     * Method: testPaths
+     * 
+     * Input: OceanCell for the start, OceanGrid, and a double for the max
+     *  mission length
+     * 
+     * Output: an OceanPath which holds the cells of the best path found
+     *  from the testing.
+     */
     public static OceanPath testPaths(OceanCell start, OceanGrid grid, double missionLength) {
         OceanPath currentPath;
         int numTrials = 100;
@@ -229,7 +238,18 @@ public class Planner {
     }
     */
     
-    
+    /*
+     * Method: findNeighbors
+     * 
+     * Input: OceanCell, OceanGrid, and an int for the range of how far to look
+     *  for nearby neighbors
+     * 
+     * Output: an ArrayList of OceanCells which are the neighbors of the 
+     *  inputted OceanCell
+     * 
+     * Details: Finds all the neighboring cells within the range provided.
+     *  Used for the heuristic for A* path planning.
+     */
     public static ArrayList<OceanCell> findNeighbors(OceanCell currentCell, OceanGrid grid, int range) {
         int t = currentCell.getTime();
         int z = currentCell.getDepth();
@@ -249,34 +269,19 @@ public class Planner {
                 }  
             }
         }
-        /*
-        for (int i = 1;  i <= range; ++i) {
-            for (int j = 1; j <= range; ++j) {
-                for (int dir = 0; dir < Planner.numDirections; dir++) {
-                    int dirx = Planner.directions[dir * 2];
-                    int diry = Planner.directions[dir * 2 + 1];
-                    int newx = x + (i * dirx);
-                    int newy = y + (j * diry);
-
-                    // If heading toward a feasible location
-                    if ((newy >= 0) && (newy < grid.getLonLength())
-                            && (newx >= 0) && (newx < grid.getLatLength())) {            
-                        // since location is within boundaries, check this neighbor
-                        OceanCell neighbor = grid.getCell(t,z,newx,newy);
-                        if (!neighbors.contains(neighbor)) {
-                            neighbors.add(neighbor);
-                        }
-                    }  
-                 }
-            }
-        }
-        */ 
         return neighbors;    
     }
+    
      /* Method: recordInstance
-	 * Input: whether this instance is the last to be recorded
-	 * Output: records the grid at a particular instance
-	 */
+      * 
+      * Input: whether this instance is the last to be recorded
+      * 
+      * Output: records the grid at a particular instance
+      * 
+      * Details: Written by Sherman Lam. Edited a bit to work with my code.
+      *  This method is used for debugging and tracing purposes in 
+      *  Mathematica.
+      */
 	public static void recordInstance(ArrayList<OceanCell> visitedSet, boolean last, OceanGrid grid){
 		int Ntime = grid.cellGrid.length;
                 int Ndepth = grid.cellGrid[0].length;
@@ -311,8 +316,14 @@ public class Planner {
 	}
 	
 	/* Method: recordHistory
+         * 
 	 * Input: File to write to 
+         * 
 	 * Output: writes the history of coordinates to the file as a list
+         * 
+         * Details: Written by Sherman Lam. Edited a bit to work with my code.
+         *  This method is used for debugging and tracing purposes in 
+         *  Mathematica.
 	 */
 	public static void recordHistory(File file){
 		PrintWriter outputStream = null;
@@ -336,7 +347,7 @@ public class Planner {
     public static void main(String args[]) {
         
         ArrayList<OceanCell> path = PathPlanner();       
-        //System.out.println(path);
+        // if there is a path, write the mission file and kml file to view path
         if (path != null) {
             System.out.println(path.size() + " waypoints");
             writeMissionPlan.writeTextMission(outputFile, path);
