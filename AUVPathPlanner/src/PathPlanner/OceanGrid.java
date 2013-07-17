@@ -282,7 +282,9 @@ public class OceanGrid {
                 // Adjust for index change with boundaries
                 Planner.destIndex[1] -= lowBounds[1];
                 Planner.destIndex[0] -= lowBounds[0];
-                System.out.println("dest index: "+ Planner.destIndex[1] + ", " + Planner.destIndex[0]);
+                if (Planner.findDest) {
+                    System.out.println("dest index: "+ Planner.destIndex[1] + ", " + Planner.destIndex[0]);
+                }
             }
 
             System.out.println("------Boundary Indices-----");

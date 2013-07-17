@@ -37,7 +37,7 @@ public class Planner {
     static double latStart = 32.03;
     static double lonStart = 360-120;  
     
-    static boolean findDest = true;
+    static boolean findDest = false;
     // 5, 5
     static double latDest = 32.16;
     static double lonDest = 360-119.85;
@@ -116,7 +116,18 @@ public class Planner {
     static int[] startIndex;
     static int[] destIndex;
     
-    
+        
+    /* 
+     * Method: PathPlanner
+     * 
+     * Input: None
+     * 
+     * Output: ArrayList of OceanCells
+     * 
+     * Details: This is the primary method that reads the netCDF file 
+     * and constructs the grid, then chooses the path planning
+     *  algorithm and returns the path.
+     */
     public static ArrayList<OceanCell> PathPlanner() {
         System.out.println("Starting path planning with " + SearchAlg + "...");
 
@@ -167,18 +178,21 @@ public class Planner {
     
     public static OceanPath testPaths(OceanCell start, OceanGrid grid, double missionLength) {
         OceanPath currentPath;
+        int numTrials = 100;
         System.out.println("RANDOM PATH PLANNING");
         System.out.println("----------------------------------");
+        System.out.println("Generating " + numTrials + " Random Paths");
         OceanPath bestPath = RandomPlanner.Random(start, grid, missionLength);
         // index to represent which algorithm found the best path, -1 is random.
         // positive numbers correspond to weighting for A*
         double bestPathIndex = -1;
-        for (int i = 0; i < 50; ++i) {
+        for (int i = 0; i < numTrials; ++i) {
             currentPath = RandomPlanner.Random(start, grid, missionLength);
             if (currentPath.fScore > bestPath.fScore) {
                 bestPath = currentPath;
             }
         }
+        System.out.println("-----------------------------------");
         System.out.println("BEST RANDOM PATH");
         System.out.println("-----------------------------------");
         System.out.println(bestPath);
@@ -186,7 +200,7 @@ public class Planner {
         System.out.println("A* PATH PLANNING");
         System.out.println("-----------------------------------");
         weighting = 0;
-        while (weighting <= 2.5) {
+        while (weighting <= 3) {
             currentPath = AStarPlanner.AStar(start, grid, missionLength);
             System.out.println("Weighting:" + weighting
                     + ", " + currentPath);

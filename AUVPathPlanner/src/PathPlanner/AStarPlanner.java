@@ -16,34 +16,10 @@ import java.util.PriorityQueue;
 public class AStarPlanner {
         
     public static double objectiveEstimate(OceanPath currentPath, OceanGrid grid) {
-        
+        /*
         double heuristicRate = 0;
         OceanCell currentCell = currentPath.get(currentPath.size()-1);
         
-        
-        int t = currentCell.getTime();
-        int z = currentCell.getDepth();
-        int x = currentCell.getLat();
-        int y = currentCell.getLon();         
-        for (int dirx = -(2); dirx <= 2; ++dirx) {
-            for (int diry = -(2); diry <= 2; ++diry) {
-                int newx = x + dirx;
-                int newy = y + diry;
-                // If heading toward a feasible location
-                if ((newy >= 0) && (newy < grid.getLonLength())
-                        && (newx >= 0) && (newx < grid.getLatLength())) {            
-                    // since location is within boundaries, add this neighbor
-                    OceanCell neighbor = (grid.getCell(t,z,newx,newy));
-                    if (currentPath.contains(neighbor)) {
-                        heuristicRate -= neighbor.getTempErr();
-                    }
-                    else {
-                        heuristicRate += neighbor.getTempErr();
-                    }
-                }  
-            }
-        }
-        /*
         ArrayList<OceanCell> neighbors = Planner.findNeighbors(currentCell, grid, 2);
         for (int i = 0; i < neighbors.size(); ++i) {
             OceanCell neighbor = neighbors.get(i);
@@ -55,14 +31,13 @@ public class AStarPlanner {
             }
         }
         */
-        heuristicRate = (heuristicRate/25) * Planner.weighting;
         //heuristicRate = (heuristicRate/neighbors.size()) * Planner.weighting;
         
         //System.out.println(heuristicRate);
         double timeLeft = Planner.missionLength - currentPath.latestTime + (Planner.hourStartIndex*Planner.timeInterval);
         //System.out.println("time left is " + timeLeft);
         double predCells = (currentPath.size()/currentPath.latestTime)*timeLeft;
-        //double heuristicRate = (0.2289 * Planner.weighting);
+        double heuristicRate = (0.2289 * Planner.weighting);
         double predScore = heuristicRate * predCells;
         //System.out.println("predicted score left is " + predScore);
         return predScore;

@@ -59,9 +59,8 @@ public class OceanPath {
                     " Score:" + gScore + ", Arrival Time"
                     + " since " + time + ": " + timeArrived + " secs";
                     */
-        return "Path length is " + path.size() + ", latest time:" + latestTime
-                + ", max Temp:" + maxTemp + ", min temp:" 
-                + minTemp + ". Accumulated objective:" + gScore + ", predicted remaining:"
+        return "Path length is " + path.size() + " cells, time elapsed:" + latestTime
+                + " sec. Accumulated objective:" + gScore + ", predicted remaining:"
                 + (fScore-gScore);
     }  
     
