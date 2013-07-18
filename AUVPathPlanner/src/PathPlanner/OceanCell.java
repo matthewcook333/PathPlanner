@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * 
  */
 package PathPlanner;
 
@@ -8,10 +7,21 @@ import java.util.Stack;
 
 /**
  *
- * @author atthewco
+ * @author Matt Cook
+ * 
+ * Class: OceanCell
+ * 
+ * Description: OceanCell objects are used to hold data about a given point 
+ *  in the ocean with specified latitude, longitude, depth, and time. 
+ *  OceanCells can hold information about the temperature, salinity, u currents,
+ *  and v currents, as well as their uncertainty. Also, they can be accessed
+ *  using their indices on an OceanGrid of time, lat, lon, and depth.
+ *  Lastly, OceanCells has data members used to store info used for path 
+ *  planning.
  */
 public class OceanCell {
 
+    // data members for holding the values of the location of the cell
     private double time;
     private double latitude;
     private double longitude;
@@ -29,6 +39,7 @@ public class OceanCell {
     //Meridional Current
     private double v;
     
+    // Uncertainty in the data for each variable
     private double tempErr;
     private double salinErr;
     private double uErr;
@@ -38,11 +49,14 @@ public class OceanCell {
     public double timeArrived;
     public double gScore;
     public double fScore;
-    public Stack<Integer> treeDepth;
+    public Stack<Integer> treeDepth; // used for DFS
 
     /*
     * Constructor of the OceanCell at time, lat, lon, depth, with the
     * information at that cell from the ROMS data
+    * 
+    * Inputs: ints for the cell indices in a grid, doubles for the values of 
+    *  the location, doubles for the data at that cell location
     */
     public OceanCell(int tI, int latI, int lonI, int depI,
             double time, double latit, double longit, double dep,
@@ -65,14 +79,18 @@ public class OceanCell {
         this.tempErr = tempErr;
         this.salinErr = salinErr;
         this.uErr = zonalCErr;
-        this.vErr = meridCErr;
-         
+        this.vErr = meridCErr;  
         this.gScore = 0;
         this.fScore = 0;
         this.treeDepth = new Stack<>();
         
     }
     
+    /*
+     * Copy Constructor
+     * 
+     * Input: OceanCell to copy from
+     */
     public OceanCell(OceanCell orig) {
         this.time = orig.time;
         this.timeIndex = orig.timeIndex;
@@ -104,7 +122,7 @@ public class OceanCell {
      */
     @Override
     public String toString() {
-        /* real one
+        /* real one that gives location info, rather than indices
             return "[" + latitude + "\u00B0, " + longitude + "\u00B0, " +
                       depth + " m], Temperature:" + temperature + 
                     " Score:" + gScore + ", Arrival Time"
@@ -117,20 +135,32 @@ public class OceanCell {
         
     }  
     
+    /*
+     * Method: printIndex
+     * 
+     * Input: None
+     * 
+     * Output: a String for the indices of the cell
+     * 
+     * Details: Method used to print short information about the OceanCell.
+     *  Useful when many cells need to be printed.
+     * 
+     */
     public String printIndex() {
-        /* real one
-            return "[" + latitude + "\u00B0, " + longitude + "\u00B0, " +
-                      depth + " m], Temperature:" + temperature + 
-                    " Score:" + gScore + ", Arrival Time"
-                    + " since " + time + ": " + timeArrived + " secs";
-                    */
         return "[" + latIndex + ", " + lonIndex + ", " +
                       depIndex + "]";
-        
     }  
     
     /*
-     * equals operator
+     * Method: equals 
+     * 
+     * Input: OceanCell to compare to.
+     * 
+     * Output: boolean that is true if the OceanCells are equal
+     * 
+     * Details: NOTE that this only checks if cells are equal spatially. That 
+     *  is, another cell from a different time but same location is equal
+     *  by this method.
      */
     public boolean equals(OceanCell rhs) {
         if (rhs == null && this == null) {
@@ -150,8 +180,14 @@ public class OceanCell {
     }
     
     /*
-     * copyData method for copying over the public data members used for
-     * path planning
+     * Method: copyData 
+     * 
+     * Input: OceanCell for the original OceanCell
+     * 
+     * Output: void
+     * 
+     * Details: method for copying over the public data members used for
+     *  path planning
      */
     public void copyData(OceanCell orig) {
         this.timeArrived = orig.timeArrived;
@@ -160,7 +196,12 @@ public class OceanCell {
         this.treeDepth = orig.treeDepth;
     }
  
-    
+    /*
+     * ----------------------------------------------------------------
+     * Below are methods used to access the private data members of the
+     * OceanCell.
+     * ----------------------------------------------------------------
+     */
     
     /*
      * getTime()
@@ -271,7 +312,7 @@ public class OceanCell {
         return this.v;
     }
     
-        /*
+    /*
      * getTempErr()
      * 
      * method that returns value of the error in temperature
