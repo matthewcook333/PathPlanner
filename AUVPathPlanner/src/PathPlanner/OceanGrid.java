@@ -224,13 +224,16 @@ public class OceanGrid {
     /*
      * readFile
      * 
-     * input: a string which is the name of the file to be read
+     * input: two Strings which are the files to be read in. The first file
+     *  is the forecast file which has the mean data. The second file is the 
+     *  ensemble mode data which gives the uncertainty data of each variable.
      * 
      * output: void
      * 
-     * description: This function takes in a netCDF file (file ending in .nc)
+     * description: This function takes in two netCDF file (file ending in .nc)
      * and reads in the variables latitude, longitude, depth, temperature,
-     * and salinity, into multiple primitive arrays. These arrays can then be
+     * and salinity, into multiple primitive arrays. Also reads the uncertainty
+     * in the variables into primitive arrays. These arrays can then be
      * used by the OceanGrid constructor to create OceanCells within the grid.
      */
     public static void readFile(String fileName, String errFileName) {
@@ -297,39 +300,30 @@ public class OceanGrid {
             int latDim = highBounds[1] - lowBounds[1] + 1;
             int lonDim = highBounds[0] - lowBounds[0] + 1;
             
-            // Get the latitude and longitude Variables.
+            // Getting lat, lon, depth, and time data from file
             Variable timeVar = dataFile.findVariable("time");
             if (timeVar == null) {
                 System.out.println("Cant find Variable time");
                 return;
-            }      
-            
-            // Get the latitude and longitude Variables.
+            }           
             Variable latVar = dataFile.findVariable("lat");
             if (latVar == null) {
                 System.out.println("Cant find Variable Latitude");
                 return;
             }       
-
             Variable lonVar = dataFile.findVariable("lon");
             if (lonVar == null) {
                 System.out.println("Cant find Variable longitude");
                 return;
             }
-
             Variable depVar = dataFile.findVariable("depth");
             if (depVar == null) {
                 System.out.println("Cant find Variable depth");
                 return;
             }
 
-            // Get the lat/lon data from the file.
-            Array latArr;
-            Array lonArr;
-            Array depArr;
-            Array timeArr;
-            
-            
+            Array latArr, lonArr, depArr, timeArr;
+              
             int[] latShape = {latDim};
             int[] latOrigin = {lowBounds[1]};
             int[] lonShape = {lonDim};
@@ -472,7 +466,6 @@ public class OceanGrid {
                 uCurrents = (double[][][][]) uArray.copyToNDJavaArray();
                 vCurrents = (double[][][][]) vArray.copyToNDJavaArray();
             }
-
             tempErr = (double[][][][]) tempErrArray.copyToNDJavaArray();
             salinErr = (double[][][][]) salinErrArray.copyToNDJavaArray();
             uCurrentsErr = (double[][][][]) uErrArray.copyToNDJavaArray();
@@ -504,6 +497,15 @@ public class OceanGrid {
     
     }
     
+    /*
+     * Method: ReduceResolution
+     * 
+     * Input:
+     * 
+     * Output:
+     * 
+     * Details: STILL NEED TO DO. Method used to get coarser resolution grids.
+     */
     public OceanGrid ReduceResolution() {
         OceanGrid newGrid = new OceanGrid(this.NLAT/3, this.NLON/3);
         for (int t = 0; t < NTIME; ++t) {
@@ -520,6 +522,17 @@ public class OceanGrid {
         return newGrid;    
     }
    
+    /*
+     * Method: averageData
+     * 
+     * Input: OceanCell that is the center cell, and the grid currently used
+     * 
+     * Output: double that is the output of the averaged data from the neighbors
+     *  of a given cell
+     * 
+     * Details: TODO. HAVE NOT COMPLETED. Would be used in conjunction with
+     *  ReduceResolution.
+     */
     public static double averageData(OceanCell cell, OceanGrid grid) {
         
         double averageTemp = 0;

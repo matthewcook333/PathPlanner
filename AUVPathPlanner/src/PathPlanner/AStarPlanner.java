@@ -53,9 +53,9 @@ public class AStarPlanner {
         //heuristicRate = (heuristicRate/neighbors.size()) * Planner.weighting;
         
         //System.out.println(heuristicRate);
-        double timeLeft = Planner.missionLength - currentPath.latestTime + (Planner.hourStartIndex*Planner.timeInterval);
+        double timeLeft = Planner.missionLength - currentPath.timeElapsed + (Planner.hourStartIndex*Planner.timeInterval);
         //System.out.println("time left is " + timeLeft);
-        double predCells = (currentPath.size()/currentPath.latestTime)*timeLeft;
+        double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
         double heuristicRate = (0.2289 * Planner.weighting);
         double predScore = heuristicRate * predCells;
         //System.out.println("predicted score left is " + predScore);
@@ -142,7 +142,7 @@ public class AStarPlanner {
         // create the start OceanPath to enqueue
         OceanPath startPath = new OceanPath();
         startPath.add(start);
-        startPath.latestTime = startTime;
+        startPath.timeElapsed = startTime;
         Q.add(startPath);
 
         // while we have unexplored paths, continue searching
@@ -153,7 +153,7 @@ public class AStarPlanner {
             // if we have more than one cell, we check whether we have moved
             // onto the next timestep
             if (currentPath.size() > 1) {
-                int time = (int)Math.floor(currentPath.latestTime / timeInterval);
+                int time = (int)Math.floor(currentPath.timeElapsed / timeInterval);
                 // if there isn't enough time data, just use the latest one
                 if (time > Planner.hourEndIndex) {
                     System.out.println("Need more time data! Path Planning"
@@ -207,11 +207,11 @@ public class AStarPlanner {
                     // if we can travel to this neighbor within the time limit,
                     // create a new path including this neighbor and enqueue
                     // it in the priority queue
-                    if ((currentPath.latestTime + timeTaken) <= maxMissionTime) {
+                    if ((currentPath.timeElapsed + timeTaken) <= maxMissionTime) {
                         moreNeighbors = true;
                         OceanPath newPath = new OceanPath(currentPath);
                         newPath.add(neighbor);
-                        newPath.latestTime += timeTaken;
+                        newPath.timeElapsed += timeTaken;
                         newPath.gScore = neighborScore;
                         newPath.fScore = newPath.gScore + objectiveEstimate(newPath, grid);
                         Q.add(newPath);

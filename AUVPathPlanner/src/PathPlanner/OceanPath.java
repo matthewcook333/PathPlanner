@@ -10,16 +10,26 @@ import java.util.ArrayList;
 /**
  *
  * @author atthewco
+ * 
+ * Class: OceanPath
+ * 
+ * Description: This class is used to hold paths used for path planning. It
+ *  uses an ArrayList to hold the cells on the path, and has data members for 
+ *  the time elapsed, max and min temp found on the path, and the current
+ *  reward (objective) gathered which is the gScore, and fScore which is the sum
+ *  of the gScore and the predicted reward remaining for the path.
  */
 public class OceanPath {
     
     public ArrayList<OceanCell> path;
     
     // data members used for path planning
-    public double latestTime;
+    public double timeElapsed;
     public double maxTemp;
     public double minTemp;
+    // gScore is the reward (objective) gathered so far
     public double gScore;
+    // fScore is the sum of the gScore and the predicted reward remaining
     public double fScore;
 
     /*
@@ -28,16 +38,19 @@ public class OceanPath {
     */
     public OceanPath() {      
         this.path = new ArrayList<>();
-        this.latestTime = 0;
+        this.timeElapsed = 0;
         this.maxTemp = -9999;
         this.minTemp = 9999;
         this.gScore = 0;
         this.fScore = 0;    
     }
     
+    /*
+     * Copy constructor for the OceanPath
+     */
     public OceanPath(OceanPath orig) {
         this.path = new ArrayList<>(orig.path);
-        this.latestTime = orig.latestTime;
+        this.timeElapsed = orig.timeElapsed;
         this.maxTemp = orig.maxTemp;
         this.minTemp = orig.minTemp;
         this.gScore = orig.gScore;
@@ -58,9 +71,9 @@ public class OceanPath {
                     " Score:" + gScore + ", Arrival Time"
                     + " since " + time + ": " + timeArrived + " secs";
                     */
-        return "Path length is " + path.size() + " cells, time elapsed:" + latestTime
-                + " sec. Accumulated objective:" + gScore + ", predicted remaining:"
-                + (fScore-gScore);
+        return "Path length is " + path.size() + " cells, time elapsed:" 
+                + timeElapsed + " sec. Accumulated objective:" + 
+                gScore + ", predicted remaining:" + (fScore-gScore);
     }  
     
     /*
@@ -75,7 +88,7 @@ public class OceanPath {
         }
         return (
             this.path == rhs.path &&
-            this.latestTime == rhs.latestTime &&
+            this.timeElapsed == rhs.timeElapsed &&
             this.maxTemp == rhs.maxTemp &&
             this.minTemp == rhs.minTemp &&
             this.gScore == rhs.gScore &&
@@ -83,6 +96,16 @@ public class OceanPath {
             );
     }    
     
+    /*
+     * Method: recordData
+     * 
+     * Input: Non-static method called upon a path, and input is an OceanGrid
+     * 
+     * Output: Void
+     * 
+     * Details: Records the accurate time arrived, gScore, and fScore in each
+     *  cell, so that the cells output accurate information for printing.
+     */
     public void recordData(OceanGrid grid) {
         maxTemp = minTemp = path.get(0).getTemp();
         for (int i = 1; i < path.size(); ++i) {
@@ -103,6 +126,11 @@ public class OceanPath {
         }
     }
     
+    /* 
+     * Below are methods that can be called on OceanPath that are standard
+     *  to the ArrayList library. These include: add, isEmpty, clear, get, 
+     *  size, and contains.
+     */
     public boolean add(OceanCell cell) {
         if (cell.getTemp() < minTemp) {
             minTemp = cell.getTemp();
@@ -118,8 +146,12 @@ public class OceanPath {
     }
     
     public void clear() {
+        // NOTE: Also resets the data members
+        timeElapsed = 0;
         minTemp = 9999;
         maxTemp = -9999;
+        gScore = 0;
+        fScore = 0;
         path.clear();
     }
     
@@ -132,13 +164,13 @@ public class OceanPath {
     }
     
     public boolean contains(OceanCell cell) {
+        // Checks whether the spatial cell is in the path (which means it 
+        // could be from a different time)
         for (int i = 0; i < this.size(); ++i) {
             if (path.get(i).equals(cell)) {
                 return true;
             }
         }
         return false;
-    }
-    
-    
+    }    
 }
