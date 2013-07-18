@@ -28,7 +28,7 @@ public class DFSPlanner {
     /*
      * Method evalObj
      * 
-     * Input: OceanCell that is the parent (previous cell), and OceanCell that 
+     * Input: OceanPath that is the current path, and OceanCell that 
      *  is the current cell.
      * 
      * Output: a double that is the objective score from adding the current
@@ -39,21 +39,15 @@ public class DFSPlanner {
      *  a path. Thus, it is looking to maximize the temperature extremes found
      *  on a path.
      */ 
-    public static double evalObj(OceanCell parent, OceanCell currentCell) {
+    public static double evalObj(OceanPath currentPath, OceanCell currentCell) {
         double obj = 0;
-        if (currentCell.getTemp() > parent.maxTemp) {
-            obj = Math.abs(currentCell.getTemp()-parent.maxTemp) ;
-            currentCell.maxTemp = currentCell.getTemp();
+        if (currentCell.getTemp() > currentPath.maxTemp) {
+            obj = Math.abs(currentCell.getTemp()-currentPath.maxTemp) ;
+            currentPath.maxTemp = currentCell.getTemp();
         }
-        else {
-            currentCell.maxTemp = parent.maxTemp;
-        }
-        if (currentCell.getTemp() < parent.minTemp) {
-            obj = Math.abs(currentCell.getTemp()-parent.minTemp);
-            currentCell.minTemp = currentCell.getTemp();
-        }
-        else {
-            currentCell.minTemp = parent.minTemp;
+        if (currentCell.getTemp() < currentPath.minTemp) {
+            obj = Math.abs(currentCell.getTemp()-currentPath.minTemp);
+            currentPath.minTemp = currentCell.getTemp();
         }
       return obj;
     }
@@ -136,7 +130,7 @@ public class DFSPlanner {
                     // we could not reach this cell in time allotted
                     validCell = false;
                 }
-                currentCell.gScore = parent.gScore + evalObj(parent, currentCell); 
+                currentCell.gScore = parent.gScore + evalObj2(parent, currentCell); 
                               
                 int time = (int)Math.floor(currentCell.timeArrived / timeInterval);
                 if (time > Planner.hourEndIndex) {
