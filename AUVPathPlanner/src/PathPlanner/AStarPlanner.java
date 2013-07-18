@@ -54,26 +54,29 @@ public class AStarPlanner {
      * 
      * Output: a double for the estimate of objective remaining on the path
      * 
-     * Details: The objective function is currently maximizing the uncertainty
+     * Details: The objective function is maximizing the uncertainty
      *  in temperature information.
      *  This method uses the remaining time left for the mission along
      *  with the current number of cells travels to estimate how many cells 
      *  the path can still go. 
-     *  Currently the estimation for how much temperature uncertainty the AUV
-     *  can gather is based on the average temperature uncertainty in the grid
-     *  multiplied by some weighting. A weighting of 0 would mean to not
-     *  consider the heuristic at all, and a higher weighting would make the
-     *  heuristic more important in comparing paths, thus making the path planner
-     *  explore more paths (become close to a breadth first search)
+     *  This objective function looks at the neighbors around the most recent 
+     *  cell in the path to determine how much potential uncertainty gain there
+     *  is on the path.
      */
     public static double objectiveEstimate2(OceanPath currentPath, OceanGrid grid) {
         double heuristicRate = 0;
         OceanCell currentCell = currentPath.get(currentPath.size()-1);
         
-        ArrayList<OceanCell> neighbors = Planner.findNeighbors(currentCell, grid, 2);
+        ArrayList<OceanCell> neighbors = Planner.findNeighbors(currentPath, grid, 2);
         for (int i = 0; i < neighbors.size(); ++i) {
             OceanCell neighbor = neighbors.get(i);
+            double neighborReward = neighbor.getTempErr();
             if (currentPath.contains(neighbor)) {
+                double timeDiff = neighbor.getTime() - currentCell.getTime();
+                /*
+                 * TODO: MAKE DECAY FOR VISITED CELLS NEARBY
+                 */
+                
                 heuristicRate -= neighbor.getTempErr();
             }
             else {

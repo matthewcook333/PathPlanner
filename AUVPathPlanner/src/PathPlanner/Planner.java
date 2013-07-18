@@ -272,7 +272,8 @@ public class Planner {
      * Details: Finds all the neighboring cells within the range provided.
      *  Used for the heuristic for A* path planning.
      */
-    public static ArrayList<OceanCell> findNeighbors(OceanCell currentCell, OceanGrid grid, int range) {
+    public static ArrayList<OceanCell> findNeighbors(OceanPath currentPath, OceanGrid grid, int range) {
+        OceanCell currentCell = currentPath.get(currentPath.size()-1);
         int t = currentCell.getTime();
         int z = currentCell.getDepth();
         int x = currentCell.getLat();
@@ -285,9 +286,28 @@ public class Planner {
                 int newy = y + diry;
                 // If heading toward a feasible location
                 if ((newy >= 0) && (newy < grid.getLonLength())
-                        && (newx >= 0) && (newx < grid.getLatLength())) {            
+                        && (newx >= 0) && (newx < grid.getLatLength())) {
+                    OceanCell neighbor = grid.getCell(t,z,newx,newy);
+                    double timeTaken = AUV.travelTime(currentCell, neighbor);
+                    // check if the neighbor is in a different timestep
+                    int time = (int)Math.floor(
+                            (currentPath.timeElapsed + timeTaken)
+                            / timeInterval);
+                    // if there isn't enough time data, just use the latest one
+                    if (time > Planner.hourEndIndex) {
+                        System.out.println("Need more time data! Path Planning"
+                                + " will just use data from latest timestep");
+                        time = Planner.hourEndIndex;
+                    }
+                    // if we moved onto the next timestep, we get the cell data
+                    // associated with that space and time              
+                    if (time > currentCell.getTime()) {
+                        neighbor = grid.getCell(time, 
+                                neighbor.getDepth(), neighbor.getLat(),
+                                neighbor.getLon());
+                    } 
                     // since location is within boundaries, add this neighbor
-                    neighbors.add(grid.getCell(t,z,newx,newy));
+                    neighbors.add(neighbor);
                 }  
             }
         }
