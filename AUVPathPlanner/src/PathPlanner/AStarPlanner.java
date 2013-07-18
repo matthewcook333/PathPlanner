@@ -217,6 +217,7 @@ public class AStarPlanner {
                     // create a new path including this neighbor and enqueue
                     // it in the priority queue
                     if ((currentPath.timeElapsed + timeTaken) <= maxMissionTime) {
+                        // check if the neighbor is in a different timestep
                         int time = (int)Math.floor(
                                 (currentPath.timeElapsed + timeTaken)
                                 / timeInterval);
