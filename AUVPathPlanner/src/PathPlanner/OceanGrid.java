@@ -40,6 +40,7 @@ public class OceanGrid {
     static double[][][][] uCurrentsErr;
     static double[][][][] vCurrentsErr;
     
+    // dimensions of the grid
     int NDEPTH = depArray.length;
     int NLAT = latArray.length;
     int NLON = lonArray.length;
