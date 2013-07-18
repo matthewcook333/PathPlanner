@@ -6,10 +6,31 @@ package PathPlanner;
 
 /**
  *
- * @author atthewco
+ * @author Matt Cook
+ * 
+ * Class: AUV
+ * 
+ * Description: Used for methods to calculate distance between lat and lon
+ *  coordinates, as well as for calculating the time it takes for the AUV
+ *  to travel between points given AUV propulsion and speed and direction of the
+ *  ocean currents.
  */
 public class AUV {
     
+    /*
+     * Method: travelTime
+     * 
+     * Input: OceanCell traveling from, OceanCell traveling to.
+     * 
+     * Output: double that is the time it takes to travel between the cells in 
+     *  seconds.
+     * 
+     * Details: Code based on MATLAB glider code written by David R. Thompson.
+     *  Uses the ocean currents information based upon the cell traveling from,
+     *  and AUV propulsion specified in the Planner. Returns -1 if it is not
+     *  possible to travel between cells due to opposing ocean currents speeds
+     *  being stronger than AUV propulsion.
+     */
     public static double travelTime(OceanCell currentCell, OceanCell neighbor) {
         
         double latStart = currentCell.getLatValue();
@@ -72,26 +93,26 @@ public class AUV {
         if (velocity <= 0) {
             return -1;
         }
-        
-        
-        
-        //System.out.println("Start: " + latStart + ", " + lonStart + 
-        //        " End: " + latEnd + ", " + lonEnd + " dist: " + dist + " time: " + dist/(velocity*1000));
-        
-        
-        
         // multiply by 1000 to have dist in m
         double time = (dist*1000)/velocity;
-        // print time for debugging
-        //System.out.println(time);
         return time;    
     }
         
  
     
     /*
-     * Code for longitude latitude distance formulas taken from
-     * http://www.dzone.com/snippets/distance-calculation-using-3
+     * Method: distance
+     * 
+     * Input: 4 doubles, for latitude and longitude of the two coordinates.
+     *  char for the unit of distance.
+     * 
+     * Output: double which is the distance between the two coordinates, in the
+     *  units specified.
+     * 
+     * Details: Code for longitude latitude distance formulas taken from
+     *  http://www.dzone.com/snippets/distance-calculation-using-3
+     *  Use the char 'K' to get distance in kilometers, and 'N' for nautical
+     *  miles.
      */
     public static double distance(double lat1, double lon1, double lat2, double lon2, char unit) {
       double theta = lon1 - lon2;
@@ -107,6 +128,11 @@ public class AUV {
       return (dist);
     }
 
+    /*
+     * deg2rad and rad2deg methods also provided from 
+     *  http://www.dzone.com/snippets/distance-calculation-using-3
+     *  and is used for the distance calculations.
+     */
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
     /*::  This function converts decimal degrees to radians             :*/
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
