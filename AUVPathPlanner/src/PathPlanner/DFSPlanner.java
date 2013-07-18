@@ -9,50 +9,89 @@ import java.util.Stack;
 
 /**
  *
- * @author atthewco
+ * @author Matt Cook
  * 
  * class: DFSPlanner
  * 
- * Description: 
+ * Description: Depth First Search path planner. This path planning algorithm
+ *  does an exhaustive search of all possible paths given a start location,
+ *  and outputs the best possible path given an objective function. 
+ * 
+ * TODO: Currently this method only works for shorter paths as the computation
+ *  time gets far too large as it grows exponentially, particularly if the
+ *  possible directions to travel include diagonals or different depths. 
+ *  One way to avoid this is to path plan on a coarser resolution, and 
+ *  recursively path plan on finer resolutions along the path.
  */
 public class DFSPlanner {
       
-//    public static double evalObj(OceanCell currentCell, OceanCell neighbor) {
-//        return Math.abs(currentCell.getTemp() - neighbor.getTemp());
-//    }
-     
-      public static double evalObj(OceanCell parent, OceanCell currentCell) {
-          double obj = 0;
-          if (currentCell.getTemp() > parent.maxTemp) {
-              obj = Math.abs(currentCell.getTemp()-parent.maxTemp) ;
-              currentCell.maxTemp = currentCell.getTemp();
-          }
-          else {
-              currentCell.maxTemp = parent.maxTemp;
-          }
-          if (currentCell.getTemp() < parent.minTemp) {
-              obj = Math.abs(currentCell.getTemp()-parent.minTemp);
-              currentCell.minTemp = currentCell.getTemp();
-          }
-          else {
-              currentCell.minTemp = parent.minTemp;
-          }
-        return obj;
-      }
+    /*
+     * Method evalObj
+     * 
+     * Input: OceanCell that is the parent (previous cell), and OceanCell that 
+     *  is the current cell.
+     * 
+     * Output: a double that is the objective score from adding the current
+     *  cell.
+     * 
+     * Details: This objective evaluation function looks only at whether it has
+     *  found a higher maximum temperature or lower mininum temperature along
+     *  a path. Thus, it is looking to maximize the temperature extremes found
+     *  on a path.
+     */ 
+    public static double evalObj(OceanCell parent, OceanCell currentCell) {
+        double obj = 0;
+        if (currentCell.getTemp() > parent.maxTemp) {
+            obj = Math.abs(currentCell.getTemp()-parent.maxTemp) ;
+            currentCell.maxTemp = currentCell.getTemp();
+        }
+        else {
+            currentCell.maxTemp = parent.maxTemp;
+        }
+        if (currentCell.getTemp() < parent.minTemp) {
+            obj = Math.abs(currentCell.getTemp()-parent.minTemp);
+            currentCell.minTemp = currentCell.getTemp();
+        }
+        else {
+            currentCell.minTemp = parent.minTemp;
+        }
+      return obj;
+    }
+    
+    
+    /*
+     * Method: evalObj2
+     * 
+     * Input: OceanCell that is the parent cell, and OceanCell that is the 
+     *  current cell.
+     * 
+     * Output: a double that is the absolute difference between the temperature
+     *  of the two cells.
+     * 
+     * Details: This objective evaluating method looks to maximize the 
+     *  temperature differences between cells on a path. Thus, it is finding
+     *  a path that has parts of the ocean with fast changing temperatures, 
+     *  like a cold front.
+     */
+    public static double evalObj2(OceanCell parent, OceanCell currentCell) {
+        return Math.abs(parent.getTemp() - currentCell.getTemp());
+    }
     
     /* 
-     * Depth First Search path planning algorithm. It takes in
-     * 7 inputs: the x, y, and z coordinates of the start and end
-     * locations, and the maximum time the mission can take.
-     * The path planner looks at all the neighbors 
-     * and finds the most feasible path given the 
-     * data from ROMS on the currents. The objective of the path planner
-     * is to maximize the change in temperature from waypoint to waypoint.
+     * 
+     * Method: DFS
+     * 
+     * Input: OceanCell for start, OceanCell for dest (null for no dest), 
+     *  OceanGrid to do the search on, a double for the maximum mission length
+     * 
+     * Output: OceanPath that is the best path found. 
+     * 
+     * Details: Depth First Search path planning algorithm thatdoes an 
+     *  exhaustive search of  the possible paths, and returns the path that 
+     *  best satisfies the objective chosen.
      * 
      */
     public static OceanPath DFS(OceanCell start, OceanCell dest, OceanGrid grid, double missionLength) {
-        
-        boolean record = Planner.mathematica;
         
         double timeInterval = Planner.timeInterval;
         double startTime = Planner.hourStartIndex*timeInterval;
@@ -90,11 +129,6 @@ public class DFSPlanner {
             if (visited.size() > 0) {
                 OceanCell parent = visited.get(visited.size()-1);
                 double timeTaken = AUV.travelTime(parent, currentCell);
-                // distance calculation, not time
-                //double timeTaken = AUV.distance(parent.getLatValue(), parent.getLonValue(),
-                        //currentCell.getLatValue(), currentCell.getLonValue(), 'K');
-                //timeTaken *= 1000;
-                //double timeTaken = 1;
                 currentCell.timeArrived = parent.timeArrived + timeTaken;
 
                 // impossible to reach this neighbor, skip to next neighbor
@@ -122,7 +156,7 @@ public class DFSPlanner {
             // add current cell to the list of visited cells
             visited.add(currentCell);
 
-            if(record){
+            if(Planner.mathematica){
 		Planner.recordInstance(visited, false, grid);
 	    }
             
@@ -145,9 +179,7 @@ public class DFSPlanner {
             int x = currentCell.getLat();
             int y = currentCell.getLon();
             int z = currentCell.getDepth();
-            
-            //System.out.println("Current Cell: " + x + ", " + y + ", " + z);
-            
+     
             // Look at all the neighbors
             for (int dir = 0; dir < Planner.numDirections; dir++) {
                 // if we could not reach the current cell in time allotted,
@@ -192,7 +224,7 @@ public class DFSPlanner {
             System.out.println("Cannot reach the destination in time limit!");
             System.exit(-1);
         }
-        if(record){
+        if(Planner.mathematica){
                 Planner.recordInstance(visited, false, grid);
                 Planner.recordInstance(bestPath.path, true, grid);
         }
@@ -200,7 +232,18 @@ public class DFSPlanner {
         Planner.recordHistory(new File(Planner.historyFile));
         return bestPath;
     }
-        
+    
+    
+    /*
+     * Method: DFSPathPlanner
+     * 
+     * Input: OceanCell start, OceanCell dest (can be null if no dest),
+     *  OceanGrid to search on, double for the max distance, int for number 
+     *  of iterations we can have of a coarser resolution.
+     * 
+     * TODO: Method not complete yet! This is to combine the reducing resolution
+     *  with the DFS. Also, need to change max distance to max mission time.
+     */
     public static ArrayList<OceanCell> DFSPathPlanner(OceanCell start, OceanCell dest, OceanGrid grid, double maxDistance, int iterator) {
         OceanGrid origGrid = grid;
         int origIter = iterator;

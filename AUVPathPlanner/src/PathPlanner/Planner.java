@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author atthewco
+ * @author Matt Cook
  * 
  * class: Planner
  * 
@@ -22,29 +22,35 @@ import java.util.ArrayList;
  */
 public class Planner {
 
-    // name of ROMS file
-    //static String fileName = "ca_subCA_das_2013061209.nc";
+    // fileName is the name of the netCDF forecast data file
+    // This can be a local file or an http address to pull the file 
+    // from a THREDDS server 
     static String fileName = "ca_subCA_fcst_2013070203.nc";
-    static String errFileName = "ca_subCA_errfcst_2013070103.nc";
+    //static String fileName = "ca_subCA_das_2013061209.nc";
     //static String fileName = "http://west.rssoffice.com:8080/thredds/dodsC/pacific/CA3km-forecast/CA/ca_subCA_fcst_2013070203.nc";
     //static String fileName = "http://west.rssoffice.com:8080/thredds/dodsC/pacific/CA3km-forecast/CA/ca_subCA_errfcst_2013062403.nc";
-    // name of output text vector map file
+    
+    // errFileName is the netCDF forecast data from ensemble mode
+    // Same ways to retrive file as for the forecast file
+    static String errFileName = "ca_subCA_errfcst_2013070103.nc";
+    // name of output text VectorMap file and KML file
     static String outputFile = "test.txt";
     static String KMLFile = "testCUSTOM2.kml";
+    // name of the search algorithm to use
+    // Choices: AStar, DFS, Random, TEST
     static String SearchAlg = "TEST";
-
+    // Used for DFS, set to true to find a destination cell
+    static boolean findDest = false;
+    
     //start and end coordinates
     static double latStart = 32.03;
     static double lonStart = 360-120;  
-    
-    static boolean findDest = false;
     // 5, 5
     static double latDest = 32.16;
     static double lonDest = 360-119.85;
     // 9, 9
     //static double latDest = 32.28;
-    //static double lonDest = 360-119.73; 
-    
+    //static double lonDest = 360-119.73;     
     //static double latDest = 32.1;
     //static double lonDest = 360-119.91; 
     
@@ -57,20 +63,6 @@ public class Planner {
     // propulsion of the AUV in m/s
     static double propulsion = 1.3;
     
-    // set true if text output for mathematica is needed
-    // history is used to store mathematica string
-    // NOTE: This makes the program run for much longer to record all paths
-    static boolean mathematica = false;
-    static String history = "";
-    static String historyFile = "DFS_POC_COOK2.txt";
-    
-    
-    // degree interval between each lat and lon
-    final static double interval = 0.03;
-    // precision that determines the error bound for lat and lon values.
-    final static double prec = interval/2;
-    
-    
     // Long Beach LAT LON Boundaries
     //  33deg 18' 39.66" N
     //final static double LOWLAT = 33.311017;
@@ -81,6 +73,7 @@ public class Planner {
     //final static double HIGHLAT = 33.738494;
     // 81x81 final static double HIGHLAT = 34.43;
     final static double HIGHLAT = 32.5;
+    
     // 118 deg 27' 34.82" W
     //final static double LOWLON = 360-118.459672;
     // FOR 0,0 final static double LOWLON = 360-120;
@@ -97,20 +90,38 @@ public class Planner {
     // time indices. NOTE: Index 0 is 1 hour after 3AM on the day of file
     final static int hourStartIndex = 0;
     final static int hourEndIndex = 72;
+    // For converting to seconds for the path planning
     final static int timeInterval = 3600;
+    
+    // degree interval between each lat and lon
+    // NOTE: Should only need to change if using different netCDF file
+    final static double interval = 0.03;
+    // precision that determines the error bound for lat and lon values.
+    final static double prec = interval/2;
     
     // Array of all the possible locations at the same depth
     // If we just want 4 possible directions
     //final static int[] directions = { -1, 0, 0, -1, 0, 1, 1, 0,};
     //final static int numDirections = 4;
+    
+    // For 8 possible directions, includes diagonals
     final static int[] directions = {-1, -1, -1, 0, -1, 1, 0, -1,
             0, 1, 1, -1, 1, 0, 1, 1};
     final static int numDirections = 8;
-//    final static int[] directions = {-1,-1,-1, 0,-1,-1, -1,-1,0, -1,0,-1, 
-//        -1,0,0, 0,-1,0, 0,0,-1, 1,1,1, 0,1,1, 1,1,0, 1,0,1, 1,0,0, 0,1,0, 0,0,1,
-//         1,-1,-1, -1,-1,1, -1,1,-1, -1,1,1, 1,-1,1, 1,1,-1, -1,1,1, 1,1,-1,
-//         1,-1,1, 1,-1,-1, -1,1,-1, -1,-1,1};
-//    final static int[] numDirections = 26;
+    
+    // for including depth, so 26 possible directions
+    // final static int[] directions = {-1,-1,-1, 0,-1,-1, -1,-1,0, -1,0,-1, 
+    //    -1,0,0, 0,-1,0, 0,0,-1, 1,1,1, 0,1,1, 1,1,0, 1,0,1, 1,0,0, 0,1,0, 0,0,1,
+    //     1,-1,-1, -1,-1,1, -1,1,-1, -1,1,1, 1,-1,1, 1,1,-1, -1,1,1, 1,1,-1,
+    //     1,-1,1, 1,-1,-1, -1,1,-1, -1,-1,1};
+    // final static int[] numDirections = 26;
+    
+    // set true if text output for mathematica is needed
+    // history is used to store mathematica string
+    // NOTE: This makes the program run for much slower to record all paths
+    static boolean mathematica = false;
+    static String history = "";
+    static String historyFile = "DFS_POC_COOK2.txt";
     
     // variable to store the start coordinate index when reading in the file
     static int[] startIndex;
@@ -138,7 +149,7 @@ public class Planner {
         // Make a 3-D array which holds all the data
         OceanGrid grid = new OceanGrid();
         
-        // find start cell
+        // find start cell from the grid
         OceanCell start;
         start = grid.getCell(hourStartIndex,0, startIndex[1], startIndex[0]);
         
@@ -149,6 +160,7 @@ public class Planner {
             System.exit(0);
         }
         
+        // find the dest cell in grid if necessary
         OceanCell dest = null;
         if (Planner.findDest) {
             dest = grid.getCell(hourEndIndex,0, Planner.destIndex[1], Planner.destIndex[0]);
@@ -157,7 +169,6 @@ public class Planner {
         OceanPath path = null;
         switch (SearchAlg) {
             case "DFS":
-                //path = DFSPlanner.DFS(start, dest, grid, missionLength);
                 path = DFSPlanner.DFS(start, dest, grid, missionLength);
                 break;
             case "AStar":
@@ -232,11 +243,22 @@ public class Planner {
         System.out.println(bestPath);
         return bestPath;
     }
+    
+    
     /*
+     * Method: findStart
+     * 
+     * Input: OceanGrid to find a start cell
+     * 
+     * Output: OceanCell that is the optimal start cell
+     * 
+     * Details: TODO. Finds the optimal start cell for path planning.
+     */
+    
     public static OceanCell findStart(OceanGrid grid) {
-        
+        return null;
     }
-    */
+    
     
     /*
      * Method: findNeighbors
@@ -272,78 +294,77 @@ public class Planner {
         return neighbors;    
     }
     
-     /* Method: recordInstance
-      * 
-      * Input: whether this instance is the last to be recorded
-      * 
-      * Output: records the grid at a particular instance
-      * 
-      * Details: Written by Sherman Lam. Edited a bit to work with my code.
-      *  This method is used for debugging and tracing purposes in 
-      *  Mathematica.
-      */
-	public static void recordInstance(ArrayList<OceanCell> visitedSet, boolean last, OceanGrid grid){
-		int Ntime = grid.cellGrid.length;
-                int Ndepth = grid.cellGrid[0].length;
-                int Nrows = grid.cellGrid[0][0].length;
-		int Ncols = grid.cellGrid[0][0][0].length;
-		int pairsWritten = 0;
-		
-		Planner.history += "{";
-                for(int t=0; t<Ntime; t++) {
-                    for(int d=0; d<Ndepth; d++) {
-                        for(int row=0; row<Nrows; row++){
-                                for(int col=0; col<Ncols; col++){
-                                    for (int i = 0; i<visitedSet.size(); i++) {
-                                        if(visitedSet.get(i).equals(grid.cellGrid[t][d][row][col])){
-        //					System.out.println(grid[row][col]== null);
-                                                Planner.history += "{" + col + "," + row + "}";
-                                                pairsWritten++;
-                                                if(pairsWritten < visitedSet.size()){
-                                                        Planner.history += ",";
-                                                }
-                                                //System.out.println(history);
-                                        }
-                                        }
-                                }
-                        }
-                    }
-                }
-		Planner.history += "}";
-		if(!last){
-			Planner.history += ",";
-		}
-	}
+    
+    /* Method: recordInstance
+     * 
+     * Input: whether this instance is the last to be recorded
+     * 
+     * Output: records the grid at a particular instance
+     * 
+     * Details: Written by Sherman Lam. Edited a bit to work with my code.
+     *  This method is used for debugging and tracing purposes in 
+     *  Mathematica.
+     */
+    public static void recordInstance(ArrayList<OceanCell> visitedSet, boolean last, OceanGrid grid){
+         int Ntime = grid.cellGrid.length;
+         int Ndepth = grid.cellGrid[0].length;
+         int Nrows = grid.cellGrid[0][0].length;
+         int Ncols = grid.cellGrid[0][0][0].length;
+         int pairsWritten = 0;
+
+         Planner.history += "{";
+         for(int t=0; t<Ntime; t++) {
+             for(int d=0; d<Ndepth; d++) {
+                 for(int row=0; row<Nrows; row++){
+                         for(int col=0; col<Ncols; col++){
+                             for (int i = 0; i<visitedSet.size(); i++) {
+                                 if(visitedSet.get(i).equals(grid.cellGrid[t][d][row][col])){
+                                     Planner.history += "{" + col + "," + row + "}";
+                                     pairsWritten++;
+                                     if(pairsWritten < visitedSet.size()){
+                                             Planner.history += ",";
+                                     }
+                                 }
+                             }
+                        }    
+                   }
+              }
+         }
+         Planner.history += "}";
+         if(!last){
+                 Planner.history += ",";
+         }
+    }
 	
-	/* Method: recordHistory
-         * 
-	 * Input: File to write to 
-         * 
-	 * Output: writes the history of coordinates to the file as a list
-         * 
-         * Details: Written by Sherman Lam. Edited a bit to work with my code.
-         *  This method is used for debugging and tracing purposes in 
-         *  Mathematica.
-	 */
-	public static void recordHistory(File file){
-		PrintWriter outputStream = null;
-		try{
-			String toWrite = "{" + Planner.history + "}";
-			outputStream = new PrintWriter(new FileWriter(file));
-			outputStream.write(toWrite);
-		}
-		catch(IOException e){
-			System.out.println("Could not write to file." + e.getMessage());
-		}
-		finally{
-			if(outputStream != null){
-				outputStream.close();
-			}
-		}
-	}
+    
+    /* Method: recordHistory
+     * 
+     * Input: File to write to 
+     * 
+     * Output: writes the history of coordinates to the file as a list
+     * 
+     * Details: Written by Sherman Lam. Edited a bit to work with my code.
+     *  This method is used for debugging and tracing purposes in 
+     *  Mathematica.
+     */
+    public static void recordHistory(File file){
+            PrintWriter outputStream = null;
+            try{
+                    String toWrite = "{" + Planner.history + "}";
+                    outputStream = new PrintWriter(new FileWriter(file));
+                    outputStream.write(toWrite);
+            }
+            catch(IOException e){
+                    System.out.println("Could not write to file." + e.getMessage());
+            }
+            finally{
+                    if(outputStream != null){
+                            outputStream.close();
+                    }
+            }
+    }
     
 
-    
     public static void main(String args[]) {
         
         ArrayList<OceanCell> path = PathPlanner();       

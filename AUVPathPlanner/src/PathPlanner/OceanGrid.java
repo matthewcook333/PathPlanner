@@ -112,6 +112,7 @@ public class OceanGrid {
      * given the provided boundaries.
      */
     /*
+     * CURRENTLY NOT USING THIS METHOD ANYMORE
     public OceanGrid getPortion(double lowLat, double highLat,
             double lowLon, double highLon) {
         
@@ -190,6 +191,7 @@ public class OceanGrid {
      * within the OceanGrid.
      */
     /*
+     * CURRENTLY NOT USING METHOD ANYMORE
     public int[] findIndex(double lat, double lon) {
         // array that is lat,lon
         int[] index = new int[2];   
