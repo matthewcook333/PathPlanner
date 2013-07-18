@@ -10,7 +10,7 @@ import java.util.PriorityQueue;
 
 /**
  *
- * @author atthewco
+ * @author Matt Cook
  * 
  * Class: AStarPlanner
  * 

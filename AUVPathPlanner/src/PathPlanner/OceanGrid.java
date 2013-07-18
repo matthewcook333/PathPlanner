@@ -16,7 +16,7 @@ import ucar.nc2.dt.grid.GridCoordSys;
 
 /**
  *
- * @author atthewco
+ * @author Matt Cook
  * 
  * Class: OceanGrid
  * 

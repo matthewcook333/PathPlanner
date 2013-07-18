@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author atthewco
+ * @author Matt Cook
  * 
  * Class: OceanPath
  * 
