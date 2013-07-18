@@ -4,8 +4,7 @@ Author: Matt Cook
 
 This project is used for AUV Path Planning using information provided by the Jet Propulsion Laboratory's Regional Ocean
 Modeling System (ROMS). Multiple path planning algorithms are used in this project, and this README outlines how to run 
-the program and use the output from this project. For more information about the individual classes, read the comments
-within the files.
+the program and use the output from this project. Comments within each individual class are explained within the files.
 
 To run the program:
 The only file that should be changed to run the program is the Planner.java, as that is where the global variables are
@@ -24,7 +23,8 @@ The first one of these files is a text file, which is the VectorMap mission file
 used for planning waypoints for the Iver2 AUV to travel. This text file can be loaded directed into the Iver2
 for deployment.
 The second file is a KML file. KML files are used to display in Google Earth or NASA World Wind. When opened in
-Google Earth, this file displays the path planning boundaries, the path, and information about each waypoint along the path.
+one of these programs, this file displays the path planning boundaries, the path, and information about each
+waypoint along the path.
 
 
 
