@@ -40,8 +40,33 @@ public class AStarPlanner {
      *  explore more paths (become close to a breadth first search)
      */
     public static double objectiveEstimate(OceanPath currentPath, OceanGrid grid) {
+        double timeLeft = Planner.missionLength - currentPath.timeElapsed + (Planner.hourStartIndex*Planner.timeInterval);
+        double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
+        double heuristicRate = (0.2289 * Planner.weighting);
+        double predScore = heuristicRate * predCells;
+        return predScore;
+    }
+    
         /*
-         * TODO: Make the heuristic better by looking at neighbors
+     * Method: objectiveEstimate2
+     * 
+     * Input: OceanPath that is the current path, and OceanGrid
+     * 
+     * Output: a double for the estimate of objective remaining on the path
+     * 
+     * Details: The objective function is currently maximizing the uncertainty
+     *  in temperature information.
+     *  This method uses the remaining time left for the mission along
+     *  with the current number of cells travels to estimate how many cells 
+     *  the path can still go. 
+     *  Currently the estimation for how much temperature uncertainty the AUV
+     *  can gather is based on the average temperature uncertainty in the grid
+     *  multiplied by some weighting. A weighting of 0 would mean to not
+     *  consider the heuristic at all, and a higher weighting would make the
+     *  heuristic more important in comparing paths, thus making the path planner
+     *  explore more paths (become close to a breadth first search)
+     */
+    public static double objectiveEstimate2(OceanPath currentPath, OceanGrid grid) {
         double heuristicRate = 0;
         OceanCell currentCell = currentPath.get(currentPath.size()-1);
         
@@ -55,18 +80,18 @@ public class AStarPlanner {
                 heuristicRate += neighbor.getTempErr();
             }
         }
-        */
-        //heuristicRate = (heuristicRate/neighbors.size()) * Planner.weighting;
+        
+        heuristicRate = (heuristicRate/neighbors.size()) * Planner.weighting;
         
         //System.out.println(heuristicRate);
         double timeLeft = Planner.missionLength - currentPath.timeElapsed + (Planner.hourStartIndex*Planner.timeInterval);
         //System.out.println("time left is " + timeLeft);
         double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
-        double heuristicRate = (0.2289 * Planner.weighting);
         double predScore = heuristicRate * predCells;
         //System.out.println("predicted score left is " + predScore);
         return predScore;
     }
+    
     
     /*
      * Method: addObjective
