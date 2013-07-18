@@ -11,6 +11,12 @@ import java.util.PriorityQueue;
 /**
  *
  * @author atthewco
+ * 
+ * Class: AStarPlanner
+ * 
+ * Description: This class is holds the methods used for the A* Path Planning
+ *  Algorithm. Note that this class relies on variables in the Planner class
+ *  as well as using the OceanCell, OceanPath, and OceanGrid classes.
  */
 public class AStarPlanner {
     

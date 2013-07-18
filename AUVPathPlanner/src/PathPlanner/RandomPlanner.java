@@ -9,8 +9,13 @@ import java.util.Random;
 
 /**
  *
- * @author atthewco
- */
+ * @author Matt Cook
+ * 
+ * Class: RandomPlanner
+ * 
+ * Description: This class is used for the randomized path planning. That is,
+ *  it outputs a path by picking contiguous cells randomly.
+ **/ 
 public class RandomPlanner {
     
     /* 
@@ -23,7 +28,10 @@ public class RandomPlanner {
      * 
      * Details: This path planning algorithm picks a random neighbor to 
      *  travel to, although it does not allow it to return to the cell 
-     *  it just came from.
+     *  it just came from. This is to provide more interesting results, as 
+     *  going back to the same cell immediately would not give much reward. 
+     *  Note that this does not mean it cannot revisit cells, as it still can
+     *  if the path made a loop around.
      * 
      */
     public static OceanPath Random(OceanCell start, OceanGrid grid, double missionLength) {
