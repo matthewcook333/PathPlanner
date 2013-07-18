@@ -181,26 +181,6 @@ public class AStarPlanner {
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
             
-            // if we have more than one cell, we check whether we have moved
-            // onto the next timestep
-            if (currentPath.size() > 1) {
-                int time = (int)Math.floor(currentPath.timeElapsed / timeInterval);
-                // if there isn't enough time data, just use the latest one
-                if (time > Planner.hourEndIndex) {
-                    System.out.println("Need more time data! Path Planning"
-                            + " will just use data from latest timestep");
-                    time = Planner.hourEndIndex;
-                }
-                // if we moved onto the next timestep, we get the cell data
-                // associated with that space and time              
-                if (time > currentPath.get(currentPath.size()-2).getTime()) {
-                    OceanCell sameCell = grid.getCell(time, 
-                            currentCell.getDepth(), currentCell.getLat(),
-                            currentCell.getLon());
-                    sameCell.copyData(currentCell);
-                    currentCell = sameCell;
-                }  
-            }
             // Record path if tracing paths in mathematica
             if (Planner.mathematica) {
                 Planner.recordInstance(currentPath.path, false, grid);
@@ -227,8 +207,6 @@ public class AStarPlanner {
                     // since location is within boundaries, check this neighbor
                     OceanCell neighbor = grid.getCell(t,z,newx,newy);
                     double timeTaken = AUV.travelTime(currentCell, neighbor);
-                    double neighborScore = currentPath.gScore 
-                            + addObjective(currentPath, neighbor);
 
                     // impossible to reach cell, skip to next neighbor
                     if (timeTaken < 0) {
@@ -239,11 +217,28 @@ public class AStarPlanner {
                     // create a new path including this neighbor and enqueue
                     // it in the priority queue
                     if ((currentPath.timeElapsed + timeTaken) <= maxMissionTime) {
+                        int time = (int)Math.floor(
+                                (currentPath.timeElapsed + timeTaken)
+                                / timeInterval);
+                        // if there isn't enough time data, just use the latest one
+                        if (time > Planner.hourEndIndex) {
+                            System.out.println("Need more time data! Path Planning"
+                                    + " will just use data from latest timestep");
+                            time = Planner.hourEndIndex;
+                        }
+                        // if we moved onto the next timestep, we get the cell data
+                        // associated with that space and time              
+                        if (time > currentPath.get(currentPath.size()-1).getTime()) {
+                            neighbor = grid.getCell(time, 
+                                    neighbor.getDepth(), neighbor.getLat(),
+                                    neighbor.getLon());
+                        }  
                         moreNeighbors = true;
                         OceanPath newPath = new OceanPath(currentPath);
                         newPath.add(neighbor);
                         newPath.timeElapsed += timeTaken;
-                        newPath.gScore = neighborScore;
+                        newPath.gScore = currentPath.gScore 
+                            + addObjective(currentPath, neighbor);
                         newPath.fScore = newPath.gScore + objectiveEstimate(newPath, grid);
                         Q.add(newPath);
                     }      
