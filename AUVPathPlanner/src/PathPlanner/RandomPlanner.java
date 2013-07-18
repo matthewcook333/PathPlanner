@@ -41,12 +41,10 @@ public class RandomPlanner {
         
         boolean timeLeft = true;
         while (timeLeft) {
-            //OceanCell currentCell = (OceanCell) Q.dequeue();
             OceanCell currentCell = randomPath.get(randomPath.size()-1);
-            //System.out.println(randomPath);
-            
             if (randomPath.size() > 1) {
                 int time = (int)Math.floor(randomPath.timeElapsed / timeInterval);
+                // if we ran out of time data, just use latest time data
                 if (time > Planner.hourEndIndex) {
                     System.out.println("Need more time data! Path Planning"
                             + " will just use data from latest timestep");
@@ -60,13 +58,12 @@ public class RandomPlanner {
                     sameCell.copyData(currentCell);
                     currentCell = sameCell;
                 }  
-            }
-            
+            } 
+            // record current path if tracing
             if (Planner.mathematica) {
                 Planner.recordInstance(randomPath.path, false, grid);
             }
-           
-
+            
             int t = currentCell.getTime();
             int z = currentCell.getDepth();
             int x = currentCell.getLat();
@@ -92,43 +89,43 @@ public class RandomPlanner {
                     }
                     // skip if we are going back to same cell
                     if (randomPath.size() > 1) {
-                        if (neighbor.equals(randomPath.get(randomPath.size()-2))) {
+                        OceanCell prevCell = 
+                                randomPath.get(randomPath.size()-2);
+                        if (neighbor.equals(prevCell)) {
                             continue;
                         }
                     }
-                    
-                    
-                    if ((randomPath.timeElapsed + timeTaken) <= maxMissionTime) {
-                        /*
-                        ArrayList<OceanCell> newPath = new ArrayList<>();
-                        for (int i = 0; i < currentPath.size(); ++i) {
-                            OceanCell copy = new OceanCell(currentPath.get(i));
-                            newPath.add(copy);
-                        }
-                        */
+                    // if we can reach neighbor in time, add it to the 
+                    // list of possible neighbors
+                    if ((randomPath.timeElapsed+timeTaken) <= maxMissionTime) {
                         neighbors.add(neighbor);
                     }  
                 }
             }
-            
+            // if there are no neighbors, that means there is no time left
+            // to reach a new cell
             if (neighbors.isEmpty()) {
                 timeLeft = false;
             }
             else {
+                // pick a random neighbor from list of possible neighbors
                 int randomIndex = generator.nextInt(neighbors.size());
-                //System.out.println("chose " + randomIndex + " out of " + neighbors.size());
                 OceanCell randomNeighbor = neighbors.get(randomIndex);
+                // update information about path
                 double timeTaken = AUV.travelTime(currentCell, randomNeighbor);
-                randomPath.gScore += AStarPlanner.addObjective(randomPath, randomNeighbor);
+                randomPath.gScore += 
+                        AStarPlanner.addObjective(randomPath, randomNeighbor);
                 randomPath.add(randomNeighbor);
                 randomPath.timeElapsed += timeTaken;
                 randomPath.fScore = randomPath.gScore;
             }
         }
+    // record final path if tracing in mathematica    
     if(Planner.mathematica) {
-    Planner.recordInstance(randomPath.path, true, grid);
-    Planner.recordHistory(new File(Planner.historyFile));
+        Planner.recordInstance(randomPath.path, true, grid);
+        Planner.recordHistory(new File(Planner.historyFile));
     }
+    // fill in cells on path with accurate information
     randomPath.recordData(grid);
     return randomPath;
     }
