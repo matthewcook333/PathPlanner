@@ -35,11 +35,7 @@ public class OceanCell {
     private double vErr;
     
     // data members used for path planning
-    public boolean visited;
-    public OceanCell parent;
     public double timeArrived;
-    public double maxTemp;
-    public double minTemp;
     public double gScore;
     public double fScore;
     public Stack<Integer> treeDepth;
@@ -70,11 +66,7 @@ public class OceanCell {
         this.salinErr = salinErr;
         this.uErr = zonalCErr;
         this.vErr = meridCErr;
-        
-        this.visited = false; 
-        this.parent = null; 
-        this.maxTemp = (double) temp;
-        this.minTemp = (double) temp;
+         
         this.gScore = 0;
         this.fScore = 0;
         this.treeDepth = new Stack<>();
@@ -99,10 +91,6 @@ public class OceanCell {
         this.salinErr = orig.salinErr;
         this.uErr = orig.uErr;
         this.vErr = orig.vErr;
-        this.parent = orig.parent; 
-        this.visited = orig.visited;
-        this.maxTemp = orig.maxTemp;
-        this.minTemp = orig.minTemp;
         this.gScore = orig.gScore;
         this.fScore = orig.fScore;
         this.treeDepth = orig.treeDepth;
@@ -167,10 +155,6 @@ public class OceanCell {
      */
     public void copyData(OceanCell orig) {
         this.timeArrived = orig.timeArrived;
-        this.visited = orig.visited;
-        this.parent = orig.parent; 
-        this.maxTemp = orig.maxTemp;
-        this.minTemp = orig.minTemp;
         this.gScore = orig.gScore;
         this.fScore = orig.fScore;
         this.treeDepth = orig.treeDepth;
@@ -214,19 +198,6 @@ public class OceanCell {
         return this.depIndex;
     }
     
-    /*
-     * setIndex(int time, int depth, int lat, int lon)
-     * 
-     * method that sets the indices of the cell
-     */
-    /*
-    public void setIndex(int t, int d, int latI, int lonI) {
-        this.time = t;
-        this.depth = d;
-        this.latIndex = latI;
-        this.lonIndex = lonI;
-    }
-    */
     /*
      * getTimeValue()
      * 
