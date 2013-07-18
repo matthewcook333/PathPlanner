@@ -4,9 +4,6 @@
 package PathPlanner;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -14,12 +11,9 @@ import java.util.Stack;
  *
  * @author atthewco
  * 
- * class: Planner
+ * class: DFSPlanner
  * 
- * Description: This class is where the primary path planning takes place.
- * At the top of the class is all the global variables that can be changed
- * to fit the desired parameters, and should be the only parameters that need to
- * be changed for the path planner to work properly. 
+ * Description: 
  */
 public class DFSPlanner {
       
@@ -45,8 +39,6 @@ public class DFSPlanner {
           }
         return obj;
       }
-     
-     
     
     /* 
      * Depth First Search path planning algorithm. It takes in
@@ -208,28 +200,26 @@ public class DFSPlanner {
         Planner.recordHistory(new File(Planner.historyFile));
         return bestPath;
     }
-    
-   
         
-        public static ArrayList<OceanCell> DFSPathPlanner(OceanCell start, OceanCell dest, OceanGrid grid, double maxDistance, int iterator) {
-            OceanGrid origGrid = grid;
-            int origIter = iterator;
-            while (iterator != 0) {
-                grid = grid.ReduceResolution();
-                --iterator;
-            }
-            OceanPath bestPath = DFS(start, dest, grid, maxDistance);
-            OceanPath bestHighResPath = null;
-            for (int i = 0; i < bestPath.size()-1; ++i) {
-                OceanCell pt = bestPath.get(i);
-                OceanCell nextPt = bestPath.get(i+1);
-                maxDistance = AUV.distance(pt.getLatValue(), pt.getLonValue(),
-                        nextPt.getLatValue(), nextPt.getLonValue(), 'K');
-                maxDistance *= 1000;
-                bestHighResPath.path.addAll(DFSPathPlanner(pt, nextPt, origGrid, maxDistance, origIter-1));
-                bestHighResPath.path.remove(bestHighResPath.size()-1);
-                }
-            return bestHighResPath.path;
+    public static ArrayList<OceanCell> DFSPathPlanner(OceanCell start, OceanCell dest, OceanGrid grid, double maxDistance, int iterator) {
+        OceanGrid origGrid = grid;
+        int origIter = iterator;
+        while (iterator != 0) {
+            grid = grid.ReduceResolution();
+            --iterator;
         }
+        OceanPath bestPath = DFS(start, dest, grid, maxDistance);
+        OceanPath bestHighResPath = null;
+        for (int i = 0; i < bestPath.size()-1; ++i) {
+            OceanCell pt = bestPath.get(i);
+            OceanCell nextPt = bestPath.get(i+1);
+            maxDistance = AUV.distance(pt.getLatValue(), pt.getLonValue(),
+                    nextPt.getLatValue(), nextPt.getLonValue(), 'K');
+            maxDistance *= 1000;
+            bestHighResPath.path.addAll(DFSPathPlanner(pt, nextPt, origGrid, maxDistance, origIter-1));
+            bestHighResPath.path.remove(bestHighResPath.size()-1);
+            }
+        return bestHighResPath.path;
+    }
     
 }
