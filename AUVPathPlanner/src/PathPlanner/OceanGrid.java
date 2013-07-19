@@ -500,6 +500,28 @@ public class OceanGrid {
     
     }
     
+    
+    public double averageTempErr() {
+        double averageTempErr = 0;
+        for (int t = 0; t < NTIME; ++t) {
+            double gridTempErr = 0;
+            for (int d = 0; d < NDEPTH; ++d) {
+                for (int i = 0; i < NLAT; ++i) {
+                    for (int j = 0; j < NLON; ++j) {
+                        gridTempErr += getCell(t, d, i, j).getTempErr();
+                    }
+                }
+            }
+            double timeTempErr = gridTempErr / (NDEPTH*NLAT*NLON);
+            System.out.println("TIME: "+ t+ " is " + timeTempErr);
+            averageTempErr += timeTempErr;
+        }
+        averageTempErr = averageTempErr / NTIME;
+        System.out.println("AVERAGE TEMP ERR IS: " + averageTempErr);
+        return averageTempErr;
+        
+    }
+    
     /*
      * Method: ReduceResolution
      * 

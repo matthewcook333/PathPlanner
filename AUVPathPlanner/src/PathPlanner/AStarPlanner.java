@@ -73,19 +73,16 @@ public class AStarPlanner {
             double neighborReward = neighbor.getTempErr();
             if (currentPath.contains(neighbor)) {
                 double timeDiff = neighbor.getTime() - currentCell.getTime();
-                /*
-                 * TODO: MAKE DECAY FOR VISITED CELLS NEARBY
-                 */
-                
-                heuristicRate -= neighbor.getTempErr();
+                if (timeDiff < 12) {
+                    neighborReward = (neighborReward * timeDiff) / 12;
+                }
+                heuristicRate += neighborReward;
             }
             else {
-                heuristicRate += neighbor.getTempErr();
+                heuristicRate += neighborReward;
             }
-        }
-        
-        heuristicRate = (heuristicRate/neighbors.size()) * Planner.weighting;
-        
+        } 
+        heuristicRate = (heuristicRate/neighbors.size()) * Planner.weighting;    
         //System.out.println(heuristicRate);
         double timeLeft = Planner.missionLength - currentPath.timeElapsed + (Planner.hourStartIndex*Planner.timeInterval);
         //System.out.println("time left is " + timeLeft);

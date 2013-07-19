@@ -166,6 +166,8 @@ public class Planner {
             dest = grid.getCell(hourEndIndex,0, Planner.destIndex[1], Planner.destIndex[0]);
         }
         
+        double tempErr = grid.averageTempErr();
+        
         OceanPath path = null;
         switch (SearchAlg) {
             case "DFS":
@@ -206,6 +208,7 @@ public class Planner {
         // index to represent which algorithm found the best path, -1 is random.
         // positive numbers correspond to weighting for A*
         double bestPathIndex = -1;
+        Boolean optimizedStart = false;
         for (int i = 0; i < numTrials; ++i) {
             currentPath = RandomPlanner.Random(start, grid, missionLength);
             if (currentPath.fScore > bestPath.fScore) {
@@ -213,9 +216,23 @@ public class Planner {
             }
         }
         System.out.println("-----------------------------------");
-        System.out.println("BEST RANDOM PATH");
-        System.out.println("-----------------------------------");
+        System.out.println("BEST RANDOM PATH WITH CHOSEN START");
         System.out.println(bestPath);
+        System.out.println("BEST RANDOM PATH WITH OPTIMAL START");
+        OceanCell optimalStart = findStart(grid);
+        System.out.println("Optimal Start is " + optimalStart.toString());
+        OceanPath tempBest = RandomPlanner.Random(optimalStart, grid, missionLength);
+        for (int i = 0; i < numTrials; ++i) {
+            currentPath = RandomPlanner.Random(optimalStart, grid, missionLength);
+            if (currentPath.fScore > tempBest.fScore) {
+                optimizedStart = true;
+                tempBest = currentPath;
+            }
+        }
+        System.out.println(tempBest);
+        if (tempBest.fScore > bestPath.fScore) {
+            bestPath = tempBest;
+        }
         System.out.println("-----------------------------------");
         System.out.println("A* PATH PLANNING");
         System.out.println("-----------------------------------");
@@ -227,8 +244,24 @@ public class Planner {
             if (currentPath.fScore > bestPath.fScore) {
                 bestPath = currentPath;
                 bestPathIndex = weighting;
+                optimizedStart = false;
             }
             writeMissionPlan.writeKMLMission(("test" + weighting + ".kml"),
+                    currentPath.path);
+            weighting += 0.5;
+        }
+        System.out.println("A* WITH OPTIMAL START");
+        weighting = 0;
+        while (weighting <= 3) {
+            currentPath = AStarPlanner.AStar(optimalStart, grid, missionLength);
+            System.out.println("Weighting:" + weighting
+                    + ", " + currentPath);
+            if (currentPath.fScore > bestPath.fScore) {
+                bestPath = currentPath;
+                bestPathIndex = weighting;
+                optimizedStart = true;
+            }
+            writeMissionPlan.writeKMLMission(("test" + weighting + "OptStart.kml"),
                     currentPath.path);
             weighting += 0.5;
         }
@@ -239,6 +272,12 @@ public class Planner {
         else {
             System.out.println("BEST PATH FOUND WITH WEIGHTING " + bestPathIndex 
                     + ": ");
+        }
+        if (optimizedStart) {
+            System.out.println("FOUND BEST PATH WITH OPTIMIZED START");
+        }
+        else {
+            System.out.println("FOUND BEST PATH WITH CHOSEN START");
         }
         System.out.println(bestPath);
         return bestPath;
@@ -256,7 +295,16 @@ public class Planner {
      */
     
     public static OceanCell findStart(OceanGrid grid) {
-        return null;
+        OceanCell bestCell = grid.getCell(hourStartIndex, 0, 0, 0);;
+        for (int i = 0; i < grid.NLAT; ++i) {
+            for (int j = 0 ; j < grid.NLON; ++j) {
+                OceanCell cell = grid.getCell(hourStartIndex, 0, i, j);
+                if (cell.getTempErr() > bestCell.getTempErr()) {
+                    bestCell = cell;
+                }
+            }
+        }
+        return bestCell;
     }
     
     
@@ -289,6 +337,10 @@ public class Planner {
                         && (newx >= 0) && (newx < grid.getLatLength())) {
                     OceanCell neighbor = grid.getCell(t,z,newx,newy);
                     double timeTaken = AUV.travelTime(currentCell, neighbor);
+                    // skip neighbors we cannot reach
+                    if (timeTaken < 0) {
+                        continue;
+                    }
                     // check if the neighbor is in a different timestep
                     int time = (int)Math.floor(
                             (currentPath.timeElapsed + timeTaken)
