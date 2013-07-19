@@ -166,6 +166,7 @@ public class Planner {
             dest = grid.getCell(hourEndIndex,0, Planner.destIndex[1], Planner.destIndex[0]);
         }
         
+        // just for tracing average temp err for now
         double tempErr = grid.averageTempErr();
         
         OceanPath path = null;
