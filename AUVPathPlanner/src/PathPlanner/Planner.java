@@ -123,9 +123,10 @@ public class Planner {
     static String history = "";
     static String historyFile = "DFS_POC_COOK2.txt";
     
-    // variable to store the start coordinate index when reading in the file
+    // variables stored to be read across classes
     static int[] startIndex;
     static int[] destIndex;
+    static double avgTempErr;
     
         
     /* 
@@ -167,7 +168,8 @@ public class Planner {
         }
         
         // just for tracing average temp err for now
-        double tempErr = grid.averageTempErr();
+        avgTempErr = grid.averageTempErr();
+        System.out.println("AVERAGE TEMP ERR IS: " + avgTempErr);
         
         OceanPath path = null;
         switch (SearchAlg) {

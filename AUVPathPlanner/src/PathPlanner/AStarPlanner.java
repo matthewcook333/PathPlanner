@@ -42,7 +42,7 @@ public class AStarPlanner {
     public static double objectiveEstimate(OceanPath currentPath, OceanGrid grid) {
         double timeLeft = Planner.missionLength - currentPath.timeElapsed + (Planner.hourStartIndex*Planner.timeInterval);
         double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
-        double heuristicRate = (0.2289 * Planner.weighting);
+        double heuristicRate = (Planner.avgTempErr * Planner.weighting);
         double predScore = heuristicRate * predCells;
         return predScore;
     }

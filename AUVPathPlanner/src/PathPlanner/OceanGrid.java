@@ -63,11 +63,11 @@ public class OceanGrid {
     
     // Two argument constructor.
     // If used, need to manually fill in grid with specified values
-    public OceanGrid(int lat, int lon) {
-        NDEPTH = depArray.length;
+    public OceanGrid(int time, int depth, int lat, int lon) {
+        NDEPTH = depth;
         NLAT = lat;
         NLON = lon;
-        NTIME = timeArray.length;
+        NTIME = time;
         cellGrid = new OceanCell[NTIME][NDEPTH][NLAT][NLON];
     }
     
@@ -500,7 +500,16 @@ public class OceanGrid {
     
     }
     
-    
+    /*
+     * Method: averageTempErr
+     * 
+     * Input: none(called upon OceanGrid)
+     * 
+     * Output: a double which is the average temperature uncertainty across grid
+     * 
+     * Details: Averages the temperature uncertainty across the entire grid.
+     * 
+     */
     public double averageTempErr() {
         double averageTempErr = 0;
         for (int t = 0; t < NTIME; ++t) {
@@ -513,13 +522,50 @@ public class OceanGrid {
                 }
             }
             double timeTempErr = gridTempErr / (NDEPTH*NLAT*NLON);
-            System.out.println("TIME: "+ t+ " is " + timeTempErr);
             averageTempErr += timeTempErr;
         }
         averageTempErr = averageTempErr / NTIME;
-        System.out.println("AVERAGE TEMP ERR IS: " + averageTempErr);
-        return averageTempErr;
-        
+        return averageTempErr;  
+    }
+    
+    public static OceanGrid averageDepths(OceanGrid grid) {
+        OceanGrid oneDepth = new OceanGrid(grid.NTIME, 1, grid.NLAT, grid.NLON);
+        for (int t = 0; t < grid.NTIME; ++t) {
+            for (int i = 0; i < grid.NLAT; ++i) {
+                for (int j = 0; j < grid.NLON; ++j) {
+                    double avgU = 0, avgV = 0, avgTemp = 0, avgSalin = 0,
+                    avgUErr = 0, avgVErr = 0, avgTempErr = 0, avgSalinErr = 0;
+                    for (int d = 0; d < grid.NDEPTH; ++d) {
+                        OceanCell cell = grid.getCell(t, d, i, j);
+                        avgU += cell.getU();
+                        avgV += cell.getV();
+                        avgTemp += cell.getTemp();
+                        avgSalin += cell.getSalin();
+                        avgUErr += cell.getUErr();
+                        avgVErr += cell.getVErr();
+                        avgTempErr += cell.getTempErr();
+                        avgSalinErr += cell.getSalinErr();
+                    }
+                    avgU = avgU / grid.NDEPTH;
+                    avgV = avgV / grid.NDEPTH;
+                    avgTemp = avgTemp / grid.NDEPTH;
+                    avgSalin = avgSalin / grid.NDEPTH;
+                    avgUErr = avgUErr / grid.NDEPTH;
+                    avgVErr = avgVErr / grid.NDEPTH;
+                    avgTempErr = avgTempErr / grid.NDEPTH;
+                    avgSalinErr = avgSalinErr / grid.NDEPTH;
+                    OceanCell cell = grid.getCell(t, 0, i, j);
+                    OceanCell newCell = new OceanCell(cell.getTime(), 
+                            cell.getLat(), cell.getLon(), cell.getDepth(),
+                            cell.getTimeValue(), cell.getLatValue(), 
+                            cell.getLonValue(), cell.getDepthValue(),
+                            avgTemp, avgSalin, avgU, avgV,
+                            avgUErr, avgVErr, avgTempErr, avgSalinErr);
+                    oneDepth.cellGrid[t][0][i][j] = newCell;
+                }
+            }
+        }
+        return oneDepth;
     }
     
     /*
@@ -532,7 +578,8 @@ public class OceanGrid {
      * Details: STILL NEED TO DO. Method used to get coarser resolution grids.
      */
     public OceanGrid ReduceResolution() {
-        OceanGrid newGrid = new OceanGrid(this.NLAT/3, this.NLON/3);
+        OceanGrid newGrid = new OceanGrid(this.NTIME, this.NDEPTH, 
+                this.NLAT/3, this.NLON/3);
         for (int t = 0; t < NTIME; ++t) {
             for (int d = 0; d < NDEPTH; ++d) {
                 for (int i = 0; i < newGrid.NLAT; ++i) {

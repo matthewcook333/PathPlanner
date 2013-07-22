@@ -68,14 +68,14 @@ public class OceanCell {
         this.lonIndex = lonI;
         this.depIndex = depI;
         this.time = time;
-        this.latitude = (double) latit;
-        this.longitude = (double) longit;
+        this.latitude = latit;
+        this.longitude = longit;
         this.timeArrived = 0;
-        this.depth = (double) dep;
-        this.temperature = (double) temp;
-        this.salinity = (double) salin;
-        this.u = (double) zonalC;
-        this.v = (double) meridC;
+        this.depth = dep;
+        this.temperature = temp;
+        this.salinity = salin;
+        this.u = zonalC;
+        this.v = meridC;
         this.tempErr = tempErr;
         this.salinErr = salinErr;
         this.uErr = zonalCErr;
@@ -195,6 +195,26 @@ public class OceanCell {
         this.fScore = orig.fScore;
         this.treeDepth = orig.treeDepth;
     }
+    
+    /*
+     * Method: setData
+     * 
+     * Input: 8 doubles, for each data member that holds information about
+     *  the cell
+     */
+    /*
+    public void setData(double newU, double newV, double newTemp, double newSalin,
+            double newUErr, double newVErr, double newTempErr, double newSalinErr) {
+        this.u = newU;
+        this.v = newV;
+        this.temperature = newTemp;
+        this.salinity = newSalin;
+        this.uErr = newUErr;
+        this.vErr = newVErr;
+        this.tempErr = newTempErr;
+        this.salinErr = newSalinErr;
+    }
+    */
  
     /*
      * ----------------------------------------------------------------
