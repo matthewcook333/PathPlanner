@@ -38,7 +38,7 @@ public class Planner {
     static String KMLFile = "testCUSTOMglider.kml";
     // name of the search algorithm to use
     // Choices: AStar, DFS, Random, TEST
-    static String SearchAlg = "AStar";
+    static String SearchAlg = "TEST";
     // Used for DFS, set to true to find a destination cell
     static boolean findDest = false;
     
@@ -59,9 +59,9 @@ public class Planner {
     static double weighting = 1;
     
     // maximum length of the mission in seconds.
-    static double missionLength = 1000000;//259200;
+    static double missionLength = 259200;
     // propulsion of the AUV in m/s
-    static double propulsion = 0.1;
+    static double propulsion = 1.3;
     
     // Long Beach LAT LON Boundaries
     //  33deg 18' 39.66" N
@@ -197,107 +197,16 @@ public class Planner {
                 path = RandomPlanner.Random(start, grid, missionLength);
                 break;
             case "TEST":
-                path = testPaths(start, grid, missionLength);
+                path = PathTests.testPaths(start, grid, missionLength);
+                break;
+            case "TEST2":
+                path = PathTests.testPaths2(start, grid, missionLength);
                 break;
             default:
                 System.out.println("Pick a search algorithm that exists!");
                 break;
         }
         return path.path;
-    }
-    
-    /*
-     * Method: testPaths
-     * 
-     * Input: OceanCell for the start, OceanGrid, and a double for the max
-     *  mission length
-     * 
-     * Output: an OceanPath which holds the cells of the best path found
-     *  from the testing.
-     */
-    public static OceanPath testPaths(OceanCell start, OceanGrid grid, double missionLength) {
-        OceanPath currentPath;
-        int numTrials = 100;
-        System.out.println("RANDOM PATH PLANNING");
-        System.out.println("----------------------------------");
-        System.out.println("Generating " + numTrials + " Random Paths");
-        OceanPath bestPath = RandomPlanner.Random(start, grid, missionLength);
-        // index to represent which algorithm found the best path, -1 is random.
-        // positive numbers correspond to weighting for A*
-        double bestPathIndex = -1;
-        Boolean optimizedStart = false;
-        for (int i = 0; i < numTrials; ++i) {
-            currentPath = RandomPlanner.Random(start, grid, missionLength);
-            if (currentPath.fScore > bestPath.fScore) {
-                bestPath = currentPath;
-            }
-        }
-        System.out.println("-----------------------------------");
-        System.out.println("BEST RANDOM PATH WITH CHOSEN START");
-        System.out.println(bestPath);
-        System.out.println("BEST RANDOM PATH WITH OPTIMAL START");
-        OceanCell optimalStart = findStart(grid);
-        System.out.println("Optimal Start is " + optimalStart.toString());
-        OceanPath tempBest = RandomPlanner.Random(optimalStart, grid, missionLength);
-        for (int i = 0; i < numTrials; ++i) {
-            currentPath = RandomPlanner.Random(optimalStart, grid, missionLength);
-            if (currentPath.fScore > tempBest.fScore) {
-                optimizedStart = true;
-                tempBest = currentPath;
-            }
-        }
-        System.out.println(tempBest);
-        if (tempBest.fScore > bestPath.fScore) {
-            bestPath = tempBest;
-        }
-        System.out.println("-----------------------------------");
-        System.out.println("A* PATH PLANNING");
-        System.out.println("-----------------------------------");
-        weighting = 0;
-        while (weighting <= 3) {
-            currentPath = AStarPlanner.AStar(start, grid, missionLength);
-            System.out.println("Weighting:" + weighting
-                    + ", " + currentPath);
-            if (currentPath.fScore > bestPath.fScore) {
-                bestPath = currentPath;
-                bestPathIndex = weighting;
-                optimizedStart = false;
-            }
-            writeMissionPlan.writeKMLMission(("test" + weighting + ".kml"),
-                    currentPath.path);
-            weighting += 0.5;
-        }
-        System.out.println("A* WITH OPTIMAL START");
-        weighting = 0;
-        while (weighting <= 3) {
-            currentPath = AStarPlanner.AStar(optimalStart, grid, missionLength);
-            System.out.println("Weighting:" + weighting
-                    + ", " + currentPath);
-            if (currentPath.fScore > bestPath.fScore) {
-                bestPath = currentPath;
-                bestPathIndex = weighting;
-                optimizedStart = true;
-            }
-            writeMissionPlan.writeKMLMission(("test" + weighting + "OptStart.kml"),
-                    currentPath.path);
-            weighting += 0.5;
-        }
-        System.out.println("------------------------------------");
-        if (bestPathIndex == -1) {
-            System.out.println("BEST PATH FOUND WITH RANDOM:");
-        }
-        else {
-            System.out.println("BEST PATH FOUND WITH WEIGHTING " + bestPathIndex 
-                    + ": ");
-        }
-        if (optimizedStart) {
-            System.out.println("FOUND BEST PATH WITH OPTIMIZED START");
-        }
-        else {
-            System.out.println("FOUND BEST PATH WITH CHOSEN START");
-        }
-        System.out.println(bestPath);
-        return bestPath;
     }
     
     
@@ -364,8 +273,7 @@ public class Planner {
                             / timeInterval);
                     // if there isn't enough time data, just use the latest one
                     if (time > Planner.hourEndIndex) {
-                        System.out.println("Need more time data! Path Planning"
-                                + " will just use data from latest timestep");
+                        // just going to use latest time data
                         time = Planner.hourEndIndex;
                     }
                     // if we moved onto the next timestep, we get the cell data

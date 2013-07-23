@@ -40,7 +40,8 @@ public class AStarPlanner {
      *  explore more paths (become close to a breadth first search)
      */
     public static double objectiveEstimate(OceanPath currentPath, OceanGrid grid) {
-        double timeLeft = Planner.missionLength - currentPath.timeElapsed + (Planner.hourStartIndex*Planner.timeInterval);
+        double timeLeft = Planner.missionLength - currentPath.timeElapsed + 
+                (Planner.hourStartIndex*Planner.timeInterval);
         double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
         double heuristicRate = (Planner.avgTempErr * Planner.weighting);
         double predScore = heuristicRate * predCells;
@@ -178,16 +179,11 @@ public class AStarPlanner {
         while (!Q.isEmpty()) {
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
-            System.out.println(currentPath);
             
             // Record path if tracing paths in mathematica
             if (Planner.mathematica) {
                 Planner.recordInstance(currentPath.path, false, grid);
             }
-
-            
-            System.out.println(currentCell.getU() + ", " + currentCell.getV());
-            
             
             int t = currentCell.getTime();
             int z = currentCell.getDepth();
@@ -210,9 +206,7 @@ public class AStarPlanner {
                     // since location is within boundaries, check this neighbor
                     OceanCell neighbor = grid.getCell(t,z,newx,newy);
                     double timeTaken = AUV.travelTime(currentCell, neighbor);
-                    //System.out.println(timeTaken);
                     
-
                     // impossible to reach cell, skip to next neighbor
                     if (timeTaken < 0) {
                         continue;

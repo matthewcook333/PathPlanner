@@ -42,6 +42,7 @@ public class AUV {
         double propulsion = Planner.propulsion;
         
         double dist = distance(latStart, lonStart, latEnd, lonEnd, 'K');
+        // horiz and vert distances to determine direction vectors
         double xDist = distance(latStart, lonStart, latEnd, lonStart, 'K');
         double yDist = distance(latStart, lonStart, latStart, lonEnd, 'K');
         
