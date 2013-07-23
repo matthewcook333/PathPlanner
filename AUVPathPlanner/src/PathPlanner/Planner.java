@@ -38,7 +38,7 @@ public class Planner {
     static String KMLFile = "testCUSTOMglider.kml";
     // name of the search algorithm to use
     // Choices: AStar, DFS, Random, TEST
-    static String SearchAlg = "TEST";
+    static String SearchAlg = "TEST2";
     // Used for DFS, set to true to find a destination cell
     static boolean findDest = false;
     
