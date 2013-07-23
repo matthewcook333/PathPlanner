@@ -536,7 +536,7 @@ public class OceanGrid {
                     double avgU = 0, avgV = 0, avgTemp = 0, avgSalin = 0,
                     avgUErr = 0, avgVErr = 0, avgTempErr = 0, avgSalinErr = 0;
                     for (int d = 0; d < grid.NDEPTH; ++d) {
-                        OceanCell cell = grid.getCell(t, d, i, j);
+                        OceanCell cell = grid.getCell(t, d, i, j);                     
                         avgU += cell.getU();
                         avgV += cell.getV();
                         avgTemp += cell.getTemp();
@@ -560,7 +560,7 @@ public class OceanGrid {
                             cell.getTimeValue(), cell.getLatValue(), 
                             cell.getLonValue(), cell.getDepthValue(),
                             avgTemp, avgSalin, avgU, avgV,
-                            avgUErr, avgVErr, avgTempErr, avgSalinErr);
+                            avgTempErr, avgSalinErr, avgUErr, avgVErr);
                     oneDepth.cellGrid[t][0][i][j] = newCell;
                 }
             }

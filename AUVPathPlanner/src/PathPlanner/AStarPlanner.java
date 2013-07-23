@@ -114,16 +114,14 @@ public class AStarPlanner {
      *  if the cell has been visited multiple times in last 12 hours.
      */
     public static double addObjective(OceanPath currentPath, OceanCell neighbor) {
-        double tempScore = neighbor.getTempErr();
+        double tempScore = neighbor.getTempErr();    
+        
         double decayScore = neighbor.getTempErr()/12;
         for (int i = currentPath.size()-1; i >= 0; --i) {
-            double decayedScore = neighbor.getTempErr();
             OceanCell pathCell = currentPath.get(i);
-            if (pathCell.equals(neighbor)) {
-                tempScore -= decayedScore;
-            }
-            if (decayedScore > 0) {
-                decayedScore -= decayScore;
+            int timeDiff = neighbor.getTime() - pathCell.getTime();
+            if (pathCell.equals(neighbor) && timeDiff < 12) {
+                tempScore = decayScore * timeDiff;
             }
         }
         return tempScore;
@@ -180,12 +178,17 @@ public class AStarPlanner {
         while (!Q.isEmpty()) {
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
+            System.out.println(currentPath);
             
             // Record path if tracing paths in mathematica
             if (Planner.mathematica) {
                 Planner.recordInstance(currentPath.path, false, grid);
             }
 
+            
+            System.out.println(currentCell.getU() + ", " + currentCell.getV());
+            
+            
             int t = currentCell.getTime();
             int z = currentCell.getDepth();
             int x = currentCell.getLat();
@@ -207,6 +210,8 @@ public class AStarPlanner {
                     // since location is within boundaries, check this neighbor
                     OceanCell neighbor = grid.getCell(t,z,newx,newy);
                     double timeTaken = AUV.travelTime(currentCell, neighbor);
+                    //System.out.println(timeTaken);
+                    
 
                     // impossible to reach cell, skip to next neighbor
                     if (timeTaken < 0) {

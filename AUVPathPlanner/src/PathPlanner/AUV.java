@@ -45,6 +45,13 @@ public class AUV {
         double xDist = distance(latStart, lonStart, latEnd, lonStart, 'K');
         double yDist = distance(latStart, lonStart, latStart, lonEnd, 'K');
         
+        if ((neighbor.getLat() - currentCell.getLat()) < 0) {
+            yDist = -yDist;
+        }
+        if ((neighbor.getLon() - currentCell.getLon()) < 0) {
+            xDist = -xDist;
+        }
+        
         // case where we are stationary
         if (dist == 0) {
             double currentMag = 
@@ -68,11 +75,13 @@ public class AUV {
         
         // calculate the current orthogonal to our direction
         double orthoCurrentMag = ((xCurrent * xOrthogonal) +
-                (yCurrent + yOrthogonal));
+                (yCurrent * yOrthogonal));
         
         // cannot overcome strength of the currents to go in this
         // direction
         if (orthoCurrentMag >= propulsion) {
+            System.out.println("currents too strong! " + orthoCurrentMag);
+            System.out.println("xortho: " + xOrthogonal + ", yOrtho: " + yOrthogonal);;
             return -1;
         }
         

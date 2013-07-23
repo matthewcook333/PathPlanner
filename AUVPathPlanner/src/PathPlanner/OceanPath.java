@@ -5,6 +5,7 @@ package PathPlanner;
 
 import static PathPlanner.AStarPlanner.addObjective;
 import static PathPlanner.AStarPlanner.objectiveEstimate;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
@@ -65,15 +66,17 @@ public class OceanPath {
      */
     @Override
     public String toString() {
+        DecimalFormat myFormat = new DecimalFormat("0.000");
         /* real one
             return "[" + latitude + "\u00B0, " + longitude + "\u00B0, " +
                       depth + " m], Temperature:" + temperature + 
                     " Score:" + gScore + ", Arrival Time"
                     + " since " + time + ": " + timeArrived + " secs";
                     */
-        return "Path length is " + path.size() + " cells, time elapsed:" 
-                + timeElapsed + " sec. Accumulated objective:" + 
-                gScore + ", predicted remaining:" + (fScore-gScore);
+        return "Path length is " + path.size() + " cells, Time elapsed:" 
+                + myFormat.format(timeElapsed) + " sec, Accumulated objective:" + 
+                myFormat.format(gScore) +
+                ", Predicted remaining:" + myFormat.format((fScore-gScore));
     }  
     
     /*

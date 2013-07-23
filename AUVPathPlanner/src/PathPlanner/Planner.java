@@ -35,10 +35,10 @@ public class Planner {
     static String errFileName = "ca_subCA_errfcst_2013070103.nc";
     // name of output text VectorMap file and KML file
     static String outputFile = "test.txt";
-    static String KMLFile = "testCUSTOM2.kml";
+    static String KMLFile = "testCUSTOMglider.kml";
     // name of the search algorithm to use
     // Choices: AStar, DFS, Random, TEST
-    static String SearchAlg = "TEST";
+    static String SearchAlg = "AStar";
     // Used for DFS, set to true to find a destination cell
     static boolean findDest = false;
     
@@ -56,12 +56,12 @@ public class Planner {
     
     // weighting for heuristic, 0 is for greedy algo and higher is 
     // closer to breadth first search
-    static double weighting = 2;
+    static double weighting = 1;
     
     // maximum length of the mission in seconds.
-    static double missionLength = 100000;//259200;
+    static double missionLength = 1000000;//259200;
     // propulsion of the AUV in m/s
-    static double propulsion = 1.3;
+    static double propulsion = 0.1;
     
     // Long Beach LAT LON Boundaries
     //  33deg 18' 39.66" N
@@ -149,6 +149,20 @@ public class Planner {
 
         // Make a 3-D array which holds all the data
         OceanGrid grid = new OceanGrid();
+        grid = OceanGrid.averageDepths(grid);
+        
+        /*
+        for (int t = 0; t < grid.NTIME; ++t) {
+            for (int i = 0; i < grid.NLAT; ++i) {
+                for (int j = 0; j < grid.NLON; ++j) {
+                    for (int d = 0; d < grid.NDEPTH; ++d) {
+                        System.out.println(d + ":" + grid.getCell(t, d, i, j).getTempErr());
+                    }
+                    System.out.println("avg grid:" + newGrid.getCell(t, 0, i, j).getTempErr());
+                }
+            } 
+        }
+        */
         
         // find start cell from the grid
         OceanCell start;
