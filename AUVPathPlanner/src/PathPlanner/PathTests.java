@@ -132,7 +132,7 @@ public class PathTests {
                 OceanCell startCell = grid.getCell(Planner.hourStartIndex, 0, x, y);
                 int numTrials = 100;
                 System.out.println("START CELL: " + startCell);
-                System.out.println("RANDOM PATH PLANNING");
+                System.out.println("START PATH PLANNING");
                 System.out.println("----------------------------------");
                 System.out.println("Generating " + numTrials + " Random Paths");
                 bestPath = RandomPlanner.Random(startCell, grid, missionLength);
@@ -148,12 +148,7 @@ public class PathTests {
                         bestStart = startCell;
                     }
                 }
-                System.out.println("-----------------------------------");
-                System.out.println("BEST RANDOM PATH WITH CHOSEN START");
-                System.out.println(bestPath);
-                System.out.println("-----------------------------------");
-                System.out.println("A* PATH PLANNING");
-                System.out.println("-----------------------------------");
+                System.out.println("Best Random: " + bestPath);
                 Planner.weighting = 0;
                 while (Planner.weighting <= 1) {
                     currentPath = AStarPlanner.AStar(startCell, grid, missionLength);
