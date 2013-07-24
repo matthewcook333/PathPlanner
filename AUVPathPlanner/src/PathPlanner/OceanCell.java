@@ -132,7 +132,8 @@ public class OceanCell {
                       depIndex + "], Temperature Err:" + tempErr + 
                     " Score:" + gScore + ", Arrival Time"
                     + " since " + timeIndex + ": " + timeArrived + " secs."
-                + " Temperature: " + temperature;
+                + " Temperature: " + temperature + ". Salin: " + salinity 
+                + " Currents: " + u + ", " + v;
         
     }  
     

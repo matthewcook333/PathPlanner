@@ -47,7 +47,7 @@ public class AStarPlanner {
         double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
         double heuristicRate = (avgTempErr * Planner.weighting);
         double predScore = heuristicRate * predCells;
-        return predScore*0.5;
+        return predScore;
     }
     
         /*

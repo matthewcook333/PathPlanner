@@ -256,7 +256,7 @@ public class writeMissionPlan {
         }
     }
     
-    public static void writeKMLMission(String fileName,
+public static void writeKMLMission(String fileName,
             ArrayList<OceanCell> path) {
  try {
      try (BufferedWriter out = new BufferedWriter(new FileWriter(fileName))) {
@@ -429,5 +429,101 @@ public class writeMissionPlan {
         } catch (IOException e) {
             System.out.println("Failed to create KML Path file!");
         }             
+    }
+
+    public static void writeKMLGrid(String fileName, OceanGrid grid) {
+ try {
+     try (BufferedWriter out = new BufferedWriter(new FileWriter(fileName))) {
+         out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+         out.newLine();
+         out.write("<kml xmlns=\"http://www.opengis.net/kml/2.2\">");
+         out.newLine();
+         out.write("  <Document>");
+         out.newLine();
+         out.write("    <name>" + fileName + "</name>");
+         out.newLine();
+         out.write("    <Style id=\"yellowLineGreenPoly\">");
+         out.newLine();
+         out.write("      <LineStyle>");
+         out.newLine();
+         
+         out.write("        <color>50B4DC14</color>");
+         out.newLine();
+         out.write("        <width>8</width>");
+         out.newLine();
+         out.write("      </LineStyle>");
+         out.newLine();
+         out.newLine();
+         out.write("    </Style>");
+         out.newLine();
+         out.write("    <Placemark>");
+         out.newLine();
+         out.write("      <name>Boundaries</name>");
+         out.newLine();
+         out.write("      <description> LOWLON: " + (360-Planner.LOWLON) +
+                 "\u00B0,\n LOWLAT: " + Planner.LOWLAT + "\u00B0,\n HIGHLON: " + 
+                 (360-Planner.HIGHLON) + "\u00B0,\n HIGHLAT: " + Planner.HIGHLAT +
+                 "\u00B0 </description>");
+         out.newLine();
+         out.write("      <styleUrl>#yellowLineGreenPoly</styleUrl>");
+         out.newLine();
+         out.write("      <LineString>");
+         out.newLine();     
+         out.write("        <coordinates> ");  
+         out.write("-" + (360-Planner.LOWLON) + ","
+                 + Planner.LOWLAT+ "," + 0);
+         out.newLine();                                
+         out.write("          -" + (360-Planner.LOWLON) + ","
+                + Planner.HIGHLAT + "," + 0);
+         out.newLine();                                
+         out.write("          -" + (360-Planner.HIGHLON) + ","
+                + Planner.HIGHLAT + "," + 0);
+         out.newLine();                                
+         out.write("          -" + (360-Planner.HIGHLON) + ","
+                + Planner.LOWLAT + "," + 0);
+         out.newLine();                                
+         out.write("          -" + (360-Planner.LOWLON) + ","
+                + Planner.LOWLAT + "," + 0);
+         out.newLine();                                                             
+         out.write("        </coordinates>");
+         out.newLine();
+         out.write("      </LineString>");
+         out.newLine();
+         out.write("    </Placemark>");
+         out.newLine();          
+         out.newLine();
+         for (int i = 0; i < grid.NLAT; ++i) {
+                for (int j = 0; j < grid.NLON; ++j) {
+                    OceanCell wp = grid.getCell(0, 0, i, j);
+                    out.write("    <Placemark>");
+                    out.newLine();
+                    out.write("      <name>" + "</name>");
+                    out.newLine();
+                    out.write("      <description>" + wp + "</description>");
+                    out.newLine();
+                    out.write("      <Point>");
+                    out.newLine();               
+                    out.write("        <coordinates> "); 
+                    out.write("-" + (360-wp.getLonValue()) + ","
+                            + wp.getLatValue() + "," + wp.getDepthValue());
+                    out.newLine();
+                    out.write("        </coordinates>");
+                    out.newLine();
+                    out.write("      </Point>");
+                    out.newLine();
+                    out.write("    </Placemark>");
+                    out.newLine();          
+                }
+         }  
+         out.write("  </Document>");
+         out.newLine();
+         out.write("</kml>");
+         out.newLine();
+     }             
+        } catch (IOException e) {
+            System.out.println("Failed to create KML Grid file!");
+        }             
     }   
+    
+    
 }

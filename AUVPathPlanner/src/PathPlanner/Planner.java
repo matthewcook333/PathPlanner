@@ -38,6 +38,7 @@ public class Planner {
     static String KMLFile = "testCUSTOMglider.kml";
     // name of test output file for testing
     static String testFile = "testOutput1.txt";
+    
     // name of the search algorithm to use
     // Choices: AStar, DFS, Random, TEST
     static String SearchAlg = "TEST2";
@@ -75,7 +76,8 @@ public class Planner {
     //final static double LOWLAT = 31.6;
     
     // 33 deg 44' 18.58" N
-    final static double HIGHLAT = 33.738494;
+    //final static double HIGHLAT = 33.738494;
+    final static double HIGHLAT = 34;
     // 81x81 final static double HIGHLAT = 34.43;
     //final static double HIGHLAT = 32.5;
     
@@ -135,6 +137,8 @@ public class Planner {
     
     static double avgTempErr;
     static OceanGrid griddy;
+    // name of file to show the grid coordinates
+    static String gridFileName = "grid.kml";
     
         
     /* 
@@ -158,20 +162,20 @@ public class Planner {
         // Make a 3-D array which holds all the data
         OceanGrid grid = new OceanGrid();
         grid = OceanGrid.averageDepths(grid);
-        griddy = grid;
+        writeMissionPlan.writeKMLGrid(gridFileName, grid);
         
         
         //for (int t = 0; t < grid.NTIME; ++t) {
-            for (int i = 0; i < grid.NLAT; ++i) {
-                for (int j = 0; j < grid.NLON; ++j) {
+            //for (int i = 0; i < grid.NLAT; ++i) {
+              //  for (int j = 0; j < grid.NLON; ++j) {
                     //for (int d = 0; d < grid.NDEPTH; ++d) {
                         //if (grid.getCell(t, d, i, j).getTemp() < 0) {
-                            System.out.println(grid.getCell(0, 0, i, j));
+                //            System.out.println(grid.getCell(0, 0, i, j));
                         //}
                         
                     //}
-                }
-            } 
+             //   }
+           // } 
         //}
         
         
