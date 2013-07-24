@@ -40,12 +40,14 @@ public class AStarPlanner {
      *  explore more paths (become close to a breadth first search)
      */
     public static double objectiveEstimate(OceanPath currentPath, OceanGrid grid) {
+        OceanCell currentCell = currentPath.get(currentPath.size()-1);
+        double avgTempErr = grid.averageTempErr(currentCell.getTime());
         double timeLeft = Planner.missionLength - currentPath.timeElapsed + 
                 (Planner.hourStartIndex*Planner.timeInterval);
         double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
-        double heuristicRate = (Planner.avgTempErr * Planner.weighting);
+        double heuristicRate = (avgTempErr * Planner.weighting);
         double predScore = heuristicRate * predCells;
-        return predScore;
+        return predScore*0.5;
     }
     
         /*
@@ -237,6 +239,9 @@ public class AStarPlanner {
                         OceanPath newPath = new OceanPath(currentPath);
                         newPath.add(neighbor);
                         newPath.timeElapsed += timeTaken;
+                        newPath.distance += AUV.distance(
+                                currentCell.getLatValue(), currentCell.getLonValue(),
+                                neighbor.getLatValue(), neighbor.getLonValue(), 'K');
                         newPath.gScore = currentPath.gScore 
                             + addObjective(currentPath, neighbor);
                         newPath.fScore = newPath.gScore + objectiveEstimate(newPath, grid);

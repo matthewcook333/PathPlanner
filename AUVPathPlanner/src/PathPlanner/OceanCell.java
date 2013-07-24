@@ -131,7 +131,8 @@ public class OceanCell {
         return "[" + latIndex + ", " + lonIndex + ", " +
                       depIndex + "], Temperature Err:" + tempErr + 
                     " Score:" + gScore + ", Arrival Time"
-                    + " since " + timeIndex + ": " + timeArrived + " secs";
+                    + " since " + timeIndex + ": " + timeArrived + " secs."
+                + " Temperature: " + temperature;
         
     }  
     

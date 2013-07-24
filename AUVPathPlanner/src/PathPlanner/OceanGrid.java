@@ -172,7 +172,8 @@ public class OceanGrid {
      */
     // access OceanCell in grid
     public OceanCell getCell(int time, int depth, int lat, int lon) {
-        if (lat >= NLAT || lon >= NLON || depth >= NDEPTH || time >= NTIME) {
+        if (lat > NLAT || lon > NLON || depth > NDEPTH || time > NTIME
+                || lat < 0 || lon < 0 || depth < 0 || time < 0) {
             System.out.println("Accessing cell [" + time + ", " + depth +
                     ", " + lat + ", " + lon + "] is outside of the dimensions"
                     + " of the grid!");
@@ -503,16 +504,17 @@ public class OceanGrid {
     /*
      * Method: averageTempErr
      * 
-     * Input: none(called upon OceanGrid)
+     * Input: an int that is the current time index
      * 
      * Output: a double which is the average temperature uncertainty across grid
      * 
-     * Details: Averages the temperature uncertainty across the entire grid.
+     * Details: Averages the temperature uncertainty across the entire grid up
+     *  to the specified time.
      * 
      */
-    public double averageTempErr() {
+    public double averageTempErr(int currentTimeIndex) {
         double averageTempErr = 0;
-        for (int t = 0; t < NTIME; ++t) {
+        for (int t = 0; t <= currentTimeIndex; ++t) {
             double gridTempErr = 0;
             for (int d = 0; d < NDEPTH; ++d) {
                 for (int i = 0; i < NLAT; ++i) {
@@ -524,7 +526,7 @@ public class OceanGrid {
             double timeTempErr = gridTempErr / (NDEPTH*NLAT*NLON);
             averageTempErr += timeTempErr;
         }
-        averageTempErr = averageTempErr / NTIME;
+        averageTempErr = averageTempErr / (currentTimeIndex+1);
         return averageTempErr;  
     }
     

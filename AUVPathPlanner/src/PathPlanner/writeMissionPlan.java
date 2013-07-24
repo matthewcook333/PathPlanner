@@ -355,6 +355,7 @@ public class writeMissionPlan {
          out.write("        <altitudeMode>absolute</altitudeMode>");
          out.newLine();
          out.write("        <coordinates> ");  
+         
          OceanCell wp = path.get(0);
          out.write("-" + (360-wp.getLonValue()) + ","
                  + wp.getLatValue()+ "," + wp.getDepthValue());
@@ -371,8 +372,32 @@ public class writeMissionPlan {
          out.write("      </LineString>");
          out.newLine();
          out.write("    </Placemark>");
-         out.newLine();   
-                                       
+         out.newLine();  
+            
+         for (int i = 0; i < Planner.griddy.NLAT; ++i) {
+                for (int j = 0; j < Planner.griddy.NLON; ++j) {
+                    wp = Planner.griddy.getCell(0, 0, i, j);
+                    out.write("    <Placemark>");
+                    out.newLine();
+                    out.write("      <name>" + "</name>");
+                    out.newLine();
+                    out.write("      <description>" + wp + "</description>");
+                    out.newLine();
+                    out.write("      <Point>");
+                    out.newLine();               
+                    out.write("        <coordinates> "); 
+                    out.write("-" + (360-wp.getLonValue()) + ","
+                            + wp.getLatValue() + "," + wp.getDepthValue());
+                    out.newLine();
+                    out.write("        </coordinates>");
+                    out.newLine();
+                    out.write("      </Point>");
+                    out.newLine();
+                    out.write("    </Placemark>");
+                    out.newLine();          
+                }
+         }
+         /*                             
          for (int i = 0; i < numWP; ++i) {
              wp = path.get(i);
              out.write("    <Placemark>");
@@ -394,14 +419,8 @@ public class writeMissionPlan {
              out.write("    </Placemark>");
              out.newLine();   
          }
+         */
          
-         
-         
-         
-         
-         
-         
-
          out.write("  </Document>");
          out.newLine();
          out.write("</kml>");

@@ -85,7 +85,7 @@ public class OceanPath {
         return "Path length is " + path.size() + " cells, Time elapsed:" 
                 + myFormat.format((timeElapsed/3600)) + " hours, Score:" + 
                 myFormat.format(gScore) +
-                ", Distance:" + myFormat.format(distance) + " m.";
+                ", Distance:" + myFormat.format(distance) + " km.";
     }  
     
     /*

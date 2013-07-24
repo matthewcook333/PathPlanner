@@ -133,8 +133,10 @@ public class PathTests {
             // index to represent which algorithm found the best path, -1 is random.
             // positive numbers correspond to Planner.weighting for A*
             double bestPathIndex = -1;         
-            for (int x = 0; x < grid.NLAT; ++x) {
-                for (int y = 0 ; y < grid.NLON; ++y) {
+//            for (int x = 0; x < grid.NLAT; ++x) {
+//                for (int y = 0 ; y < grid.NLON; ++y) {
+            for (int x = 10; x < 12; ++x) {
+                for (int y = 10; y < 12; ++y) {
                     OceanCell startCell = grid.getCell(Planner.hourStartIndex, 0, x, y);
                     int numTrials = 100;
                     System.out.println("START CELL: " + startCell);
@@ -143,20 +145,27 @@ public class PathTests {
                     //System.out.println("START PATH PLANNING");
                     //System.out.println("----------------------------------");
                     //System.out.println("Generating " + numTrials + " Random Paths");
-                    bestPath = RandomPlanner.Random(startCell, grid, missionLength);
+                    currentPath = RandomPlanner.Random(startCell, grid, missionLength);
                     randomCount++;
-                    randomGscore += bestPath.gScore;
-                    bestStart = startCell;
-                    //for (int i = 0; i < numTrials; ++i) {
-                        currentPath = RandomPlanner.Random(startCell, grid, missionLength);
-                        randomCount++;
-                        randomGscore += currentPath.gScore;
-                        if (currentPath.fScore > bestPath.fScore) {
-                            bestPath = currentPath;
-                            bestStart = startCell;
-                        }
-                    //}
-                    out.write("Random: " + bestPath);
+                    randomGscore += currentPath.gScore;
+                    if (bestPath == null) {
+                        bestPath = currentPath;
+                    }
+                    if (currentPath.gScore > bestPath.gScore) {
+                        bestPathIndex = -1;
+                        bestPath = currentPath;
+                        bestStart = startCell;
+                    }
+//                    for (int i = 0; i < numTrials; ++i) {
+//                        currentPath = RandomPlanner.Random(startCell, grid, missionLength);
+//                        randomCount++;
+//                        randomGscore += currentPath.gScore;
+//                        if (currentPath.fScore > bestPath.fScore) {
+//                            bestPath = currentPath;
+//                            bestStart = startCell;
+//                        }
+//                    }
+                    out.write("Random: " + currentPath);
                     out.newLine();
                     Planner.weighting = 0;
                     while (Planner.weighting <= 1) {
