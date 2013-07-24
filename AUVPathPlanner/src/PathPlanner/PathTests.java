@@ -5,6 +5,9 @@
 package PathPlanner;
 
 import static PathPlanner.Planner.hourStartIndex;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  *
@@ -115,82 +118,116 @@ public class PathTests {
      *  from the testing alternative 2.
      */
     public static OceanPath testPaths2(OceanCell start, OceanGrid grid, double missionLength) {
-        OceanPath currentPath;
-        OceanPath bestPath = null;
-        OceanCell bestStart = null;
-        int randomCount = 0;
-        int greedyCount = 0;
-        int count = 0;
-        double randomGscore = 0;
-        double greedyGscore = 0;
-        double gScore = 0;
-        // index to represent which algorithm found the best path, -1 is random.
-        // positive numbers correspond to Planner.weighting for A*
-        double bestPathIndex = -1;         
-        for (int x = 0; x < grid.NLAT; ++x) {
-            for (int y = 0 ; y < grid.NLON; ++y) {
-                OceanCell startCell = grid.getCell(Planner.hourStartIndex, 0, x, y);
-                int numTrials = 100;
-                System.out.println("START CELL: " + startCell);
-                System.out.println("START PATH PLANNING");
-                System.out.println("----------------------------------");
-                System.out.println("Generating " + numTrials + " Random Paths");
-                bestPath = RandomPlanner.Random(startCell, grid, missionLength);
-                randomCount++;
-                randomGscore += bestPath.gScore;
-                bestStart = startCell;
-                for (int i = 0; i < numTrials; ++i) {
-                    currentPath = RandomPlanner.Random(startCell, grid, missionLength);
+        try {
+            BufferedWriter out = 
+                    new BufferedWriter(new FileWriter(Planner.testFile));
+            OceanPath currentPath;
+            OceanPath bestPath = null;
+            OceanCell bestStart = null;
+            int randomCount = 0;
+            int greedyCount = 0;
+            int count = 0;
+            double randomGscore = 0;
+            double greedyGscore = 0;
+            double gScore = 0;
+            // index to represent which algorithm found the best path, -1 is random.
+            // positive numbers correspond to Planner.weighting for A*
+            double bestPathIndex = -1;         
+            for (int x = 0; x < grid.NLAT; ++x) {
+                for (int y = 0 ; y < grid.NLON; ++y) {
+                    OceanCell startCell = grid.getCell(Planner.hourStartIndex, 0, x, y);
+                    int numTrials = 100;
+                    System.out.println("START CELL: " + startCell);
+                    out.write("START CELL: " + startCell);
+                    out.newLine();
+                    //System.out.println("START PATH PLANNING");
+                    //System.out.println("----------------------------------");
+                    //System.out.println("Generating " + numTrials + " Random Paths");
+                    bestPath = RandomPlanner.Random(startCell, grid, missionLength);
                     randomCount++;
-                    randomGscore += currentPath.gScore;
-                    if (currentPath.fScore > bestPath.fScore) {
-                        bestPath = currentPath;
-                        bestStart = startCell;
+                    randomGscore += bestPath.gScore;
+                    bestStart = startCell;
+                    //for (int i = 0; i < numTrials; ++i) {
+                        currentPath = RandomPlanner.Random(startCell, grid, missionLength);
+                        randomCount++;
+                        randomGscore += currentPath.gScore;
+                        if (currentPath.fScore > bestPath.fScore) {
+                            bestPath = currentPath;
+                            bestStart = startCell;
+                        }
+                    //}
+                    out.write("Random: " + bestPath);
+                    out.newLine();
+                    Planner.weighting = 0;
+                    while (Planner.weighting <= 1) {
+                        currentPath = AStarPlanner.AStar(startCell, grid, missionLength);
+                        out.write("Weighting:" + Planner.weighting
+                                + ", " + currentPath);
+                        out.newLine();
+                        if (currentPath.fScore > bestPath.fScore) {
+                            bestPath = currentPath;
+                            bestPathIndex = Planner.weighting;
+                            bestStart = startCell;
+                        }
+                        if (Planner.weighting == 0) {
+                             greedyCount++;
+                             greedyGscore += currentPath.gScore;
+                        }
+                        if (Planner.weighting > 0) {
+                            count++;
+                            gScore += currentPath.gScore;
+                        }
+                        Planner.weighting += 1;
                     }
-                }
-                System.out.println("Best Random: " + bestPath);
-                Planner.weighting = 0;
-                while (Planner.weighting <= 1) {
-                    currentPath = AStarPlanner.AStar(startCell, grid, missionLength);
-                    System.out.println("Weighting:" + Planner.weighting
-                            + ", " + currentPath);
-                    if (currentPath.fScore > bestPath.fScore) {
-                        bestPath = currentPath;
-                        bestPathIndex = Planner.weighting;
-                        bestStart = startCell;
-                    }
-                    if (Planner.weighting == 0) {
-                         greedyCount++;
-                         greedyGscore += currentPath.gScore;
-                    }
-                    if (Planner.weighting > 0) {
-                        count++;
-                        gScore += currentPath.gScore;
-                    }
-                    writeMissionPlan.writeKMLMission(("test" + Planner.weighting + ".kml"),
-                            currentPath.path);
-                    Planner.weighting += 1;
                 }
             }
+
+            System.out.println("------------------------------------");
+            out.write("------------------------------------");
+            out.newLine();
+            if (bestPathIndex == -1) {
+                System.out.println("BEST PATH FOUND WITH RANDOM:");
+                out.write("BEST PATH FOUND WITH RANDOM:");
+                out.newLine();
+            }
+            else {
+                System.out.println("BEST PATH FOUND WITH WEIGHTING " + bestPathIndex 
+                        + ": ");
+                out.write("BEST PATH FOUND WITH WEIGHTING " + bestPathIndex 
+                        + ": ");
+                out.newLine();
+            }
+            System.out.println(bestPath);
+            System.out.println("WITH BEST START: " + bestStart);
+            out.write("WITH BEST START: " + bestStart);
+            out.newLine();
+            System.out.println("----------------------------------------");
+            System.out.println("AVERAGE STATISTICS");
+            System.out.println("-----------------------------------------");
+            System.out.println("Average Score of Random in " + randomCount + " trials: " + (randomGscore/randomCount));
+            System.out.println("Average Score of Greedy in " + greedyCount + " trials: " + (greedyGscore/greedyCount));
+            System.out.println("Average Score of A* in " + count + " trials: " + (gScore/count));
+            out.write("----------------------------------------");
+            out.newLine();
+            out.write("AVERAGE STATISTICS");
+            out.newLine();
+            out.write("-----------------------------------------");
+            out.newLine();
+            out.write("Average Score of Random in " + randomCount + " trials: " + (randomGscore/randomCount));
+            out.newLine();
+            out.write("Average Score of Greedy in " + greedyCount + " trials: " + (greedyGscore/greedyCount));
+            out.newLine();
+            out.write("Average Score of A* in " + count + " trials: " + (gScore/count));
+            out.newLine();
+            out.close();
+            writeMissionPlan.writeKMLMission(("test" + bestPathIndex + ".kml"),
+                  bestPath.path); 
+            return bestPath;
+                                 
+        } catch (IOException e) {
+            System.out.println("Failed to create test file!");
+            return null;
         }
-       
-        System.out.println("------------------------------------");
-        if (bestPathIndex == -1) {
-            System.out.println("BEST PATH FOUND WITH RANDOM:");
-        }
-        else {
-            System.out.println("BEST PATH FOUND WITH WEIGHTING " + bestPathIndex 
-                    + ": ");
-        }
-        System.out.println(bestPath);
-        System.out.println("WITH BEST START: " + bestStart);
-        System.out.println("----------------------------------------");
-        System.out.println("AVERAGE STATISTICS");
-        System.out.println("-----------------------------------------");
-        System.out.println("Average Score of Random in " + randomCount + " trials: " + (randomGscore/randomCount));
-        System.out.println("Average Score of Greedy in " + greedyCount + " trials: " + (greedyGscore/greedyCount));
-        System.out.println("Average Score of A* in " + count + " trials: " + (gScore/count));
-        return bestPath;
     }
     
 }

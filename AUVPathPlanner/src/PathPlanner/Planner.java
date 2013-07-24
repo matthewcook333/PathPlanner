@@ -36,6 +36,8 @@ public class Planner {
     // name of output text VectorMap file and KML file
     static String outputFile = "test.txt";
     static String KMLFile = "testCUSTOMglider.kml";
+    // name of test output file for testing
+    static String testFile = "testOutput1.txt";
     // name of the search algorithm to use
     // Choices: AStar, DFS, Random, TEST
     static String SearchAlg = "TEST2";

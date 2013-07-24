@@ -26,12 +26,14 @@ public class OceanPath {
     
     // data members used for path planning
     public double timeElapsed;
+    public double distance;
     public double maxTemp;
     public double minTemp;
     // gScore is the reward (objective) gathered so far
     public double gScore;
     // fScore is the sum of the gScore and the predicted reward remaining
     public double fScore;
+    
 
     /*
     * Constructor of the OceanCell at time, lat, lon, depth, with the
@@ -40,6 +42,7 @@ public class OceanPath {
     public OceanPath() {      
         this.path = new ArrayList<>();
         this.timeElapsed = 0;
+        this.distance = 0;
         this.maxTemp = -9999;
         this.minTemp = 9999;
         this.gScore = 0;
@@ -55,7 +58,8 @@ public class OceanPath {
         this.maxTemp = orig.maxTemp;
         this.minTemp = orig.minTemp;
         this.gScore = orig.gScore;
-        this.fScore = orig.fScore;     
+        this.fScore = orig.fScore;
+        this.distance = orig.distance;
     }
   
     /*
@@ -72,11 +76,16 @@ public class OceanPath {
                       depth + " m], Temperature:" + temperature + 
                     " Score:" + gScore + ", Arrival Time"
                     + " since " + time + ": " + timeArrived + " secs";
-                    */
-        return "Path length is " + path.size() + " cells, Time elapsed:" 
-                + myFormat.format(timeElapsed) + " sec, Accumulated objective:" + 
+            ONE USED FOR DEBUGGING
+             return "Path length is " + path.size() + " cells, Time elapsed:" 
+                + myFormat.format((timeElapsed/3600)) + " hours, Score:" + 
                 myFormat.format(gScore) +
                 ", Predicted remaining:" + myFormat.format((fScore-gScore));
+                    */
+        return "Path length is " + path.size() + " cells, Time elapsed:" 
+                + myFormat.format((timeElapsed/3600)) + " hours, Score:" + 
+                myFormat.format(gScore) +
+                ", Distance:" + myFormat.format(distance) + " m.";
     }  
     
     /*
@@ -91,6 +100,7 @@ public class OceanPath {
         }
         return (
             this.path == rhs.path &&
+            this.distance == rhs.distance &&
             this.timeElapsed == rhs.timeElapsed &&
             this.maxTemp == rhs.maxTemp &&
             this.minTemp == rhs.minTemp &&
