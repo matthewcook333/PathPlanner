@@ -372,37 +372,12 @@ public static void writeKMLMission(String fileName,
          out.write("      </LineString>");
          out.newLine();
          out.write("    </Placemark>");
-         out.newLine();  
-            
-         for (int i = 0; i < Planner.griddy.NLAT; ++i) {
-                for (int j = 0; j < Planner.griddy.NLON; ++j) {
-                    wp = Planner.griddy.getCell(0, 0, i, j);
-                    out.write("    <Placemark>");
-                    out.newLine();
-                    out.write("      <name>" + "</name>");
-                    out.newLine();
-                    out.write("      <description>" + wp + "</description>");
-                    out.newLine();
-                    out.write("      <Point>");
-                    out.newLine();               
-                    out.write("        <coordinates> "); 
-                    out.write("-" + (360-wp.getLonValue()) + ","
-                            + wp.getLatValue() + "," + wp.getDepthValue());
-                    out.newLine();
-                    out.write("        </coordinates>");
-                    out.newLine();
-                    out.write("      </Point>");
-                    out.newLine();
-                    out.write("    </Placemark>");
-                    out.newLine();          
-                }
-         }
-         /*                             
+         out.newLine();                     
          for (int i = 0; i < numWP; ++i) {
              wp = path.get(i);
              out.write("    <Placemark>");
              out.newLine();
-             out.write("      <name>Waypoint " + (i+1) + "</name>");
+             out.write("      <name>" + (i+1) + "</name>");
              out.newLine();
              out.write("      <description>" + wp + "</description>");
              out.newLine();
@@ -419,8 +394,6 @@ public static void writeKMLMission(String fileName,
              out.write("    </Placemark>");
              out.newLine();   
          }
-         */
-         
          out.write("  </Document>");
          out.newLine();
          out.write("</kml>");
