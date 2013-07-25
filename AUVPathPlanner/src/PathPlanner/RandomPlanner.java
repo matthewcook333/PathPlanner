@@ -42,6 +42,7 @@ public class RandomPlanner {
         double timeInterval = Planner.timeInterval;
         double startTime = Planner.hourStartIndex*timeInterval;
         double maxMissionTime = startTime + missionLength;   
+        Planner.missionLength = maxMissionTime;
         // initialize start of path
         OceanPath randomPath = new OceanPath();
         randomPath.add(start);

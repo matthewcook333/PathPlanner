@@ -125,6 +125,7 @@ public class AStarPlanner {
             int timeDiff = neighbor.getTime() - pathCell.getTime();
             if (pathCell.equals(neighbor) && timeDiff < 12) {
                 tempScore = decayScore * timeDiff;
+                return tempScore;
             }
         }
         return tempScore;
@@ -148,6 +149,7 @@ public class AStarPlanner {
         double timeInterval = Planner.timeInterval;
         double startTime = Planner.hourStartIndex*timeInterval;
         double maxMissionTime = startTime + missionLength;
+        Planner.missionLength = maxMissionTime;
         
         // priority queue to hold the OceanPaths
         // The top of the queue is the OceanPath with the highest f score, 

@@ -35,29 +35,24 @@ public class Planner {
     static String errFileName = "ca_subCA_errfcst_2013070103.nc";
     // name of output text VectorMap file and KML file
     static String outputFile = "test.txt";
-    static String KMLFile = "testCUSTOMglider.kml";
+    static String KMLFile = "test1.kml";
     // name of test output file for testing
     static String testFile = "testOutput1.txt";
     
     // name of the search algorithm to use
     // Choices: AStar, DFS, Random, TEST
-    static String SearchAlg = "TEST2";
+    static String SearchAlg = "AStar";
     // Used for DFS, set to true to find a destination cell
     static boolean findDest = false;
     // Switch to false when testing without specified start location
-    static boolean useStart = false;
+    static boolean useStart = true;
     
     //start and end coordinates
-    static double latStart = 32.03;
-    static double lonStart = 360-120;  
-    // 5, 5
+    static double latStart = 33.2;
+    static double lonStart = 360-118.4;  
+    // Used for DFS
     static double latDest = 32.16;
-    static double lonDest = 360-119.85;
-    // 9, 9
-    //static double latDest = 32.28;
-    //static double lonDest = 360-119.73;     
-    //static double latDest = 32.1;
-    //static double lonDest = 360-119.91; 
+    static double lonDest = 360-118.6;
     
     // weighting for heuristic, 0 is for greedy algo and higher is 
     // closer to breadth first search
