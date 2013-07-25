@@ -135,8 +135,8 @@ public class PathTests {
             double bestPathIndex = -1;         
 //            for (int x = 0; x < grid.NLAT; ++x) {
 //                for (int y = 0 ; y < grid.NLON; ++y) {
-            for (int x = 10; x < 12; ++x) {
-                for (int y = 10; y < 12; ++y) {
+            for (int x = 0; x < 1; ++x) {
+                for (int y = 0; y < 1; ++y) {
                     OceanCell startCell = grid.getCell(Planner.hourStartIndex, 0, x, y);
                     int numTrials = 100;
                     System.out.println("START CELL: " + startCell);

@@ -136,7 +136,7 @@ public class OceanCell {
                 + " Temp: " + temperature + ". Salin: " + salinity 
                 + " Currents: " + u + ", " + v;
                 */
-        return latitude + ", " + longitude;
+        return latitude + ", " + longitude + ", ";
         
     }  
     
