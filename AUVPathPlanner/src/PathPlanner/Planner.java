@@ -71,31 +71,31 @@ public class Planner {
     // Long Beach LAT LON Boundaries
     //  33deg 18' 39.66" N
     //final static double LOWLAT = 33.311017;
-    //final static double LOWLAT = 33;
+    final static double LOWLAT = 33.1;
     // FOR 0,0 final static double LOWLAT = 32.03;
     //final static double LOWLAT = 31.6;
-    final static double LOWLAT = 33.27;
+    
     
     // 33 deg 44' 18.58" N
-    //final static double HIGHLAT = 33.738494;
+    final static double HIGHLAT = 33.738494;
     //final static double HIGHLAT = 34;
     // 81x81 final static double HIGHLAT = 34.43;
     //final static double HIGHLAT = 32.5;
-    final static double HIGHLAT = 33.5;
+    
     
     // 118 deg 27' 34.82" W
     //final static double LOWLON = 360-118.459672;
-    //final static double LOWLON = 360 - 118.8;
+    final static double LOWLON = 360 - 118.8;
     // FOR 0,0 final static double LOWLON = 360-120;
     //final static double LOWLON = 360-120.5;
-    final static double LOWLON = 360 - 118.62;
+    
     
     // 118 deg 0' 57.54" W
-    //final static double HIGHLON = 360-118.015983;
+    final static double HIGHLON = 360-118.015983;
     // 81x81
     //final static double HIGHLON = 360-117.6;
     //final static double HIGHLON = 360-119.5;
-    final static double HIGHLON = 360 - 118.28;
+    
     
     // number of depth levels to retrieve
     final static int depthDim = 7;

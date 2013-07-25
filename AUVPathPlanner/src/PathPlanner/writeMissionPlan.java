@@ -470,7 +470,7 @@ public static void writeKMLMission(String fileName,
                     OceanCell wp = grid.getCell(0, 0, i, j);
                     out.write("    <Placemark>");
                     out.newLine();
-                    out.write("      <name>" + "</name>");
+                    out.write("      <name>" + wp.validCell + "</name>");
                     out.newLine();
                     out.write("      <description>" + wp + "</description>");
                     out.newLine();

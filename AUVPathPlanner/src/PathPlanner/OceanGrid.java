@@ -582,15 +582,19 @@ public class OceanGrid {
             boundaryArray[1] = lon;
             latLonArray.add(boundaryArray);
         }
+
         for (int i = 0; i < grid.NLAT; ++i) {
             for (int j = 0; j < grid.NLON; ++j) {
                 // since location is within boundaries, check this neighbor
                 OceanCell currentCell = grid.getCell(0,0,i,j);
-                double[] latLon = new double[2];
-                latLon[0] = currentCell.getLatValue();
-                latLon[1] = currentCell.getLonValue();
-                if (latLonArray.contains(latLon)) {
-                    currentCell.validCell = false;
+                for (int x = 0; x < latLonArray.size(); ++x) {
+                    double[] boundary = latLonArray.get(x);
+                    double lat = boundary[0];
+                    double lon = boundary[1];
+                    if (currentCell.getLatValue() == lat 
+                            && currentCell.getLonValue() == lon) {
+                        currentCell.validCell = false;
+                    }
                 }
             }
         }
