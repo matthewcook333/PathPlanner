@@ -50,6 +50,7 @@ public class OceanCell {
     public double gScore;
     public double fScore;
     public Stack<Integer> treeDepth; // used for DFS
+    public boolean validCell;
 
     /*
     * Constructor of the OceanCell at time, lat, lon, depth, with the
@@ -83,6 +84,7 @@ public class OceanCell {
         this.gScore = 0;
         this.fScore = 0;
         this.treeDepth = new Stack<>();
+        this.validCell = true;
         
     }
     
@@ -112,6 +114,7 @@ public class OceanCell {
         this.gScore = orig.gScore;
         this.fScore = orig.fScore;
         this.treeDepth = orig.treeDepth;
+        this.validCell = orig.validCell;
     }
 
     /*
@@ -199,6 +202,7 @@ public class OceanCell {
         this.gScore = orig.gScore;
         this.fScore = orig.fScore;
         this.treeDepth = orig.treeDepth;
+        this.validCell = orig.validCell;
     }
     
     /*

@@ -4,6 +4,7 @@
 package PathPlanner;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -570,6 +571,31 @@ public class OceanGrid {
         return oneDepth;
     }
     
+    public static void validateCells(OceanGrid grid) {
+        ArrayList<double[]> latLonArray = new ArrayList<>();
+        for (int i = 0; i < (Planner.boundaries.length/2); i++) {
+            // find grid indices of the neighbors
+            double lat = Planner.boundaries[i * 2];
+            double lon = Planner.boundaries[i * 2 + 1];
+            double[] boundaryArray = new double[2];
+            boundaryArray[0] = lat;
+            boundaryArray[1] = lon;
+            latLonArray.add(boundaryArray);
+        }
+        for (int i = 0; i < grid.NLAT; ++i) {
+            for (int j = 0; j < grid.NLON; ++j) {
+                // since location is within boundaries, check this neighbor
+                OceanCell currentCell = grid.getCell(0,0,i,j);
+                double[] latLon = new double[2];
+                latLon[0] = currentCell.getLatValue();
+                latLon[1] = currentCell.getLonValue();
+                if (latLonArray.contains(latLon)) {
+                    currentCell.validCell = false;
+                }
+            }
+        }
+    }
+    
     /*
      * Method: ReduceResolution
      * 
@@ -639,4 +665,6 @@ public class OceanGrid {
            
         return 0.0;
     }
+    
+     
 }

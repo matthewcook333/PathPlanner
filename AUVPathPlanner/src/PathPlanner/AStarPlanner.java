@@ -210,7 +210,7 @@ public class AStarPlanner {
                     double timeTaken = AUV.travelTime(currentCell, neighbor);
                     
                     // impossible to reach cell, skip to next neighbor
-                    if (timeTaken < 0) {
+                    if (timeTaken < 0 || !neighbor.validCell) {
                         continue;
                     }                  
                     

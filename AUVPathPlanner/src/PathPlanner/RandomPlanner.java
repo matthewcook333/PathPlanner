@@ -92,7 +92,7 @@ public class RandomPlanner {
                     double timeTaken = AUV.travelTime(currentCell, neighbor);
 
                     // impossible to reach cell, skip to next neighbor
-                    if (timeTaken < 0) {
+                    if (timeTaken < 0 || !neighbor.validCell) {
                         continue;
                     }
                     // skip if we are going back to same cell

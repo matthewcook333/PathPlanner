@@ -177,6 +177,7 @@ public class Planner {
         // Make a 3-D array which holds all the data
         OceanGrid grid = new OceanGrid();
         grid = OceanGrid.averageDepths(grid);
+        OceanGrid.validateCells(grid);
         writeMissionPlan.writeKMLGrid(gridFileName, grid);
         
         
