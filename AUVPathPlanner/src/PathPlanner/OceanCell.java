@@ -83,7 +83,7 @@ public class OceanCell {
         this.vErr = meridCErr;  
         this.gScore = 0;
         this.fScore = 0;
-        this.treeDepth = new Stack<>();
+        this.treeDepth = new Stack<Integer>();
         this.validCell = true;
         
     }

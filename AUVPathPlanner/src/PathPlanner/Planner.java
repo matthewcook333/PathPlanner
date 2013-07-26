@@ -41,11 +41,11 @@ public class Planner {
     
     // name of the search algorithm to use
     // Choices: AStar, DFS, Random, TEST
-    static String SearchAlg = "TEST2";
+    static String SearchAlg = "AStar";
     // Used for DFS, set to true to find a destination cell
     static boolean findDest = false;
     // Switch to false when testing without specified start location
-    static boolean useStart = false;
+    static boolean useStart = true;
     
     //start and end coordinates
     static double latStart = 33.2;
@@ -162,7 +162,7 @@ public class Planner {
      * and constructs the grid, then chooses the path planning
      *  algorithm and returns the path.
      */
-    public static ArrayList<OceanCell> PathPlanner() {
+    public static OceanPath PathPlanner() {
         System.out.println("Starting path planning with " + SearchAlg + "...");
 
         // read the .nc file in so that the arrays hold
@@ -214,28 +214,27 @@ public class Planner {
         System.out.println("AVERAGE TEMP ERR IS: " + avgTempErr);
         */
         
-        OceanPath path = null;
-        switch (SearchAlg) {
-            case "DFS":
-                path = DFSPlanner.DFS(start, dest, grid, missionLength);
-                break;
-            case "AStar":
-                path = AStarPlanner.AStar(start, grid, missionLength);
-                break;
-            case "Random":
-                path = RandomPlanner.Random(start, grid, missionLength);
-                break;
-            case "TEST":
-                path = PathTests.testPaths(start, grid, missionLength);
-                break;
-            case "TEST2":
-                path = PathTests.testPaths2(start, grid, missionLength);
-                break;
-            default:
-                System.out.println("Pick a search algorithm that exists!");
-                break;
-        }
-        return path.path;
+       OceanPath path;
+       if (SearchAlg.equals("DFS")) {
+           path = DFSPlanner.DFS(start, dest, grid, missionLength);
+       }
+       else if (SearchAlg.equals("AStar")) {
+           path = AStarPlanner.AStar(start, grid, missionLength);
+       }
+       else if (SearchAlg.equals("Random")) {
+           path = RandomPlanner.Random(start, grid, missionLength);
+       }
+       else if (SearchAlg.equals("TEST")) {
+           path = PathTests.testPaths(start, grid, missionLength);
+       }
+       else if (SearchAlg.equals("TEST2")) {
+           path = PathTests.testPaths2(start, grid, missionLength);
+       }
+       else {
+           path = null;
+           System.out.println("Pick a search algorithm that exists!");
+       }
+        return path;
     }
     
     
@@ -248,7 +247,6 @@ public class Planner {
      * 
      * Details: TODO. Finds the optimal start cell for path planning.
      */
-    
     public static OceanCell findStart(OceanGrid grid) {
         OceanCell bestCell = grid.getCell(hourStartIndex, 0, 0, 0);;
         for (int i = 0; i < grid.NLAT; ++i) {
@@ -282,7 +280,7 @@ public class Planner {
         int x = currentCell.getLat();
         int y = currentCell.getLon();         
             
-        ArrayList<OceanCell> neighbors = new ArrayList<>();
+        ArrayList<OceanCell> neighbors = new ArrayList<OceanCell>();
         for (int dirx = -(range); dirx <= range; ++dirx) {
             for (int diry = -(range); diry <= range; ++diry) {
                 int newx = x + dirx;
@@ -393,13 +391,14 @@ public class Planner {
 
     public static void main(String args[]) {
         
-        ArrayList<OceanCell> path = PathPlanner();       
+        OceanPath path = PathPlanner();       
         // if there is a path, write the mission file and kml file to view path
-        if (path != null) {
+        ArrayList<OceanCell> waypoints = path.path;
+        if (waypoints != null) {
             System.out.println(path.size() + " waypoints");
-            writeMissionPlan.writeTextMission(outputFile, path);
-            if (SearchAlg != "TEST") {
-                writeMissionPlan.writeKMLMission(KMLFile, path);
+            writeMissionPlan.writeTextMission(outputFile, waypoints);
+            if (!SearchAlg.equals("TEST") || !SearchAlg.equals("TEST2")) {
+                writeMissionPlan.writeKMLMission(KMLFile, waypoints);
             }
         }     
     }  

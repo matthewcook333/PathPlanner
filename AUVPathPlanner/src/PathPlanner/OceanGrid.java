@@ -478,7 +478,10 @@ public class OceanGrid {
         
 
        // The file is closed no matter what by putting inside a try/catch block.
-        } catch (java.io.IOException | InvalidRangeException e) {
+        } catch (InvalidRangeException e) {
+            e.printStackTrace();
+            return;
+        } catch (java.io.IOException e) {
             e.printStackTrace();
             return;
         } finally {
@@ -572,7 +575,7 @@ public class OceanGrid {
     }
     
     public static void validateCells(OceanGrid grid) {
-        ArrayList<double[]> latLonArray = new ArrayList<>();
+        ArrayList<double[]> latLonArray = new ArrayList<double[]>();
         for (int i = 0; i < (Planner.boundaries.length/2); i++) {
             // find grid indices of the neighbors
             double lat = Planner.boundaries[i * 2];

@@ -40,7 +40,7 @@ public class OceanPath {
     * information at that cell from the ROMS data
     */
     public OceanPath() {      
-        this.path = new ArrayList<>();
+        this.path = new ArrayList<OceanCell>();
         this.timeElapsed = 0;
         this.distance = 0;
         this.maxTemp = -9999;
@@ -53,7 +53,7 @@ public class OceanPath {
      * Copy constructor for the OceanPath
      */
     public OceanPath(OceanPath orig) {
-        this.path = new ArrayList<>(orig.path);
+        this.path = new ArrayList<OceanCell>(orig.path);
         this.timeElapsed = orig.timeElapsed;
         this.maxTemp = orig.maxTemp;
         this.minTemp = orig.minTemp;
@@ -127,7 +127,7 @@ public class OceanPath {
             OceanCell cell = path.get(i);
             double timeTraveled = AUV.travelTime(parent, cell);
             cell.timeArrived = parent.timeArrived + timeTraveled;
-            ArrayList<OceanCell> subPath = new ArrayList<>();
+            ArrayList<OceanCell> subPath = new ArrayList<OceanCell>();
             for (int j = 0; j < i; ++j) {
                 subPath.add(path.get(j));
             }

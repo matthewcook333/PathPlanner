@@ -92,10 +92,10 @@ public class DFSPlanner {
         double maxMissionTime = startTime + missionLength;
         
         // initialize lists for visited cells and best path found
-        ArrayList<OceanCell> visited = new ArrayList<>();
+        ArrayList<OceanCell> visited = new ArrayList<OceanCell>();
         OceanPath bestPath = new OceanPath();
         // Stack for DFS
-        Stack<OceanCell> S = new Stack<>();
+        Stack<OceanCell> S = new Stack<OceanCell>();
         
         S.push(start);
         // We also need to keep track of the depth to keep track of visited

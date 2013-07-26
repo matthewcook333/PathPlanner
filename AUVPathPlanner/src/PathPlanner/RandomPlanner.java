@@ -78,7 +78,7 @@ public class RandomPlanner {
             int x = currentCell.getLat();
             int y = currentCell.getLon();         
             
-            ArrayList<OceanCell> neighbors = new ArrayList<>();
+            ArrayList<OceanCell> neighbors = new ArrayList<OceanCell>();
             for (int dir = 0; dir < Planner.numDirections; dir++) {
                 int dirx = Planner.directions[dir * 2];
                 int diry = Planner.directions[dir * 2 + 1];

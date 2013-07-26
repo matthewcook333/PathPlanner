@@ -157,7 +157,7 @@ public class AStarPlanner {
         // The top of the queue is the OceanPath with the highest f score, 
         // which is the sum of the objective gathered so far with the heuristic
         // for predicted objective remaining
-        PriorityQueue<OceanPath> Q = new PriorityQueue<>(10,
+        PriorityQueue<OceanPath> Q = new PriorityQueue<OceanPath>(10,
                 new Comparator<OceanPath>() {
                     @Override
                     public int compare(OceanPath c1, OceanPath c2) {
