@@ -483,7 +483,7 @@ public static void writeKMLGrid(String fileName, OceanGrid grid) {
                     OceanCell wp = grid.getCell(0, 0, i, j);
                     out.write("    <Placemark>");
                     out.write('\n');
-                    out.write("      <name>" + wp.validCell + "</name>");
+                    out.write("      <name>" /*+ wp.validCell*/ + "</name>");
                     out.write('\n');
                     out.write("      <description>" + wp + "</description>");
                     out.write('\n');
