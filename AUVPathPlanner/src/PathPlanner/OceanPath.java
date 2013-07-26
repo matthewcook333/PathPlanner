@@ -112,14 +112,15 @@ public class OceanPath {
     /*
      * Method: recordData
      * 
-     * Input: Non-static method called upon a path, and input is an OceanGrid
+     * Input: Non-static method called upon a path, and input is an OceanGrid,
+     *  and a double that is the max mission length
      * 
      * Output: Void
      * 
      * Details: Records the accurate time arrived, gScore, and fScore in each
      *  cell, so that the cells output accurate information for printing.
      */
-    public void recordData(OceanGrid grid) {
+    public void recordData(OceanGrid grid, double maxMissionTime) {
         maxTemp = minTemp = path.get(0).getTemp();
         for (int i = 1; i < path.size(); ++i) {
             OceanCell parent = path.get(i-1);
@@ -135,7 +136,7 @@ public class OceanPath {
             cell.gScore = parent.gScore 
                             + addObjective(tempPath, cell);
             tempPath.path.add(path.get(i));
-            cell.fScore = cell.gScore +  objectiveEstimate(tempPath, grid);
+            cell.fScore = cell.gScore +  objectiveEstimate(tempPath, grid, maxMissionTime);
         }
     }
     

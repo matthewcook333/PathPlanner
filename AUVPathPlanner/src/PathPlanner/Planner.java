@@ -41,11 +41,11 @@ public class Planner {
     
     // name of the search algorithm to use
     // Choices: AStar, DFS, Random, TEST
-    static String SearchAlg = "AStar";
+    static String SearchAlg = "TEST2";
     // Used for DFS, set to true to find a destination cell
     static boolean findDest = false;
     // Switch to false when testing without specified start location
-    static boolean useStart = true;
+    static boolean useStart = false;
     
     //start and end coordinates
     static double latStart = 33.2;
@@ -66,7 +66,7 @@ public class Planner {
     // Long Beach LAT LON Boundaries
     //  33deg 18' 39.66" N
     //final static double LOWLAT = 33.311017;
-    final static double LOWLAT = 33.1;
+    final static double LOWLAT = 33.15;
     // FOR 0,0 final static double LOWLAT = 32.03;
     //final static double LOWLAT = 31.6;
     
@@ -80,7 +80,7 @@ public class Planner {
     
     // 118 deg 27' 34.82" W
     //final static double LOWLON = 360-118.459672;
-    final static double LOWLON = 360 - 118.8;
+    final static double LOWLON = 360 - 118.6;
     // FOR 0,0 final static double LOWLON = 360-120;
     //final static double LOWLON = 360-120.5;
     

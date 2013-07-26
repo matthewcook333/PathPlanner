@@ -42,7 +42,7 @@ public class RandomPlanner {
         double timeInterval = Planner.timeInterval;
         double startTime = Planner.hourStartIndex*timeInterval;
         double maxMissionTime = startTime + missionLength;   
-        Planner.missionLength = maxMissionTime;
+        
         // initialize start of path
         OceanPath randomPath = new OceanPath();
         randomPath.add(start);
@@ -135,7 +135,7 @@ public class RandomPlanner {
         Planner.recordHistory(new File(Planner.historyFile));
     }
     // fill in cells on path with accurate information
-    randomPath.recordData(grid);
+    randomPath.recordData(grid, maxMissionTime);
     return randomPath;
     }
 }

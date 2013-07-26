@@ -23,7 +23,8 @@ public class AStarPlanner {
     /*
      * Method: objectiveEstimate
      * 
-     * Input: OceanPath that is the current path, and OceanGrid
+     * Input: OceanPath that is the current path, OceanGrid, and a double that
+     *  is the max mission length.
      * 
      * Output: a double for the estimate of objective remaining on the path
      * 
@@ -39,10 +40,10 @@ public class AStarPlanner {
      *  heuristic more important in comparing paths, thus making the path planner
      *  explore more paths (become close to a breadth first search)
      */
-    public static double objectiveEstimate(OceanPath currentPath, OceanGrid grid) {
+    public static double objectiveEstimate(OceanPath currentPath, OceanGrid grid, double maxMissionTime) {
         OceanCell currentCell = currentPath.get(currentPath.size()-1);
         double avgTempErr = grid.averageTempErr(currentCell.getTime());
-        double timeLeft = Planner.missionLength - currentPath.timeElapsed + 
+        double timeLeft = maxMissionTime - currentPath.timeElapsed + 
                 (Planner.hourStartIndex*Planner.timeInterval);
         double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
         double heuristicRate = (avgTempErr * Planner.weighting);
@@ -53,7 +54,8 @@ public class AStarPlanner {
         /*
      * Method: objectiveEstimate2
      * 
-     * Input: OceanPath that is the current path, and OceanGrid
+     * Input: OceanPath that is the current path, OceanGrid, and a double 
+     *  that is the maximum mission length.
      * 
      * Output: a double for the estimate of objective remaining on the path
      * 
@@ -66,7 +68,7 @@ public class AStarPlanner {
      *  cell in the path to determine how much potential uncertainty gain there
      *  is on the path.
      */
-    public static double objectiveEstimate2(OceanPath currentPath, OceanGrid grid) {
+    public static double objectiveEstimate2(OceanPath currentPath, OceanGrid grid, double maxMissionTime) {
         double heuristicRate = 0;
         OceanCell currentCell = currentPath.get(currentPath.size()-1);
         
@@ -87,7 +89,7 @@ public class AStarPlanner {
         } 
         heuristicRate = (heuristicRate/neighbors.size()) * Planner.weighting;    
         //System.out.println(heuristicRate);
-        double timeLeft = Planner.missionLength - currentPath.timeElapsed + (Planner.hourStartIndex*Planner.timeInterval);
+        double timeLeft = maxMissionTime - currentPath.timeElapsed + (Planner.hourStartIndex*Planner.timeInterval);
         //System.out.println("time left is " + timeLeft);
         double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
         double predScore = heuristicRate * predCells;
@@ -149,7 +151,7 @@ public class AStarPlanner {
         double timeInterval = Planner.timeInterval;
         double startTime = Planner.hourStartIndex*timeInterval;
         double maxMissionTime = startTime + missionLength;
-        Planner.missionLength = maxMissionTime;
+        //Planner.missionLength = maxMissionTime;
         
         // priority queue to hold the OceanPaths
         // The top of the queue is the OceanPath with the highest f score, 
@@ -246,7 +248,7 @@ public class AStarPlanner {
                                 neighbor.getLatValue(), neighbor.getLonValue(), 'K');
                         newPath.gScore = currentPath.gScore 
                             + addObjective(currentPath, neighbor);
-                        newPath.fScore = newPath.gScore + objectiveEstimate(newPath, grid);
+                        newPath.fScore = newPath.gScore + objectiveEstimate(newPath, grid, maxMissionTime);
                         Q.add(newPath);
                     }      
                 }
@@ -260,7 +262,7 @@ public class AStarPlanner {
                     Planner.recordHistory(new File(Planner.historyFile));
                 }
                 // Fill the correct information into the OceanCells in the path
-                currentPath.recordData(grid);
+                currentPath.recordData(grid, maxMissionTime);
                 return currentPath;
             }
         }   
