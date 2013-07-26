@@ -72,7 +72,7 @@ public class PathTests {
                 optimizedStart = false;
             }
             writeMissionPlan.writeKMLMission(("test" + Planner.weighting + ".kml"),
-                    currentPath.path);
+                    currentPath);
             Planner.weighting += 0.5;
         }
         System.out.println("A* WITH OPTIMAL START");
@@ -87,7 +87,7 @@ public class PathTests {
                 optimizedStart = true;
             }
             writeMissionPlan.writeKMLMission(("test" + Planner.weighting + "OptStart.kml"),
-                    currentPath.path);
+                    currentPath);
             Planner.weighting += 0.5;
         }
         System.out.println("------------------------------------");
@@ -135,9 +135,9 @@ public class PathTests {
             // positive numbers correspond to Planner.weighting for A*
             double bestPathIndex = -1;         
             //for (int x = 0; x < grid.NLAT; ++x) {
-            //    for (int y = 0 ; y < grid.NLON; ++y) {
-            for (int x = 3; x < 8; ++x) {
-                for (int y = 5; y < 10; ++y) {
+              // for (int y = 0 ; y < grid.NLON; ++y) {
+            for (int x = 6; x < 7; ++x) {
+                for (int y = 1; y < 2; ++y) {
                     OceanCell startCell = grid.getCell(Planner.hourStartIndex, 0, x, y);
                     if (!startCell.validCell) {
                         invalidCount++;
@@ -145,8 +145,7 @@ public class PathTests {
                         continue;
                     }
                     int numTrials = 100;
-                    System.out.println("START CELL: " + startCell.getLat() +
-                            ", " + startCell.getLon());
+                    System.out.println("START CELL: " + startCell);
                     out.write("START CELL: " + startCell);
                     out.newLine();
                     //System.out.println("START PATH PLANNING");
@@ -177,6 +176,9 @@ public class PathTests {
                     Planner.weighting = 0;
                     while (Planner.weighting <= 1) {
                         currentPath = AStarPlanner.AStar(startCell, grid, missionLength);
+                        
+                        writeMissionPlan.writeKMLMission("test" + x + "-" + y + ".kml", currentPath);
+                        
                         out.write("Weighting:" + Planner.weighting
                                 + ", " + currentPath);
                         out.newLine();
@@ -235,9 +237,27 @@ public class PathTests {
             out.newLine();
             out.write("Average Score of A* in " + count + " trials: " + (gScore/count));
             out.newLine();
+            out.write("------------------------------------------------");
+            out.newLine();
+            out.write("Grid Boundaries: ");
+            out.newLine();
+            out.write("LOWLON: " + Planner.LOWLON + ", HIGHLON: " + Planner.HIGHLON);
+            out.newLine();
+            out.write("LOWLAT: " + Planner.LOWLAT + ", HIGHLAT: " + Planner.HIGHLAT);
+            out.newLine();
+            out.write("Source: " + Planner.fileName + ", " + Planner.errFileName);
+            out.newLine();
+            out.write("Max Mission Length: " + Planner.missionLength + " secs");
+            out.newLine();
+            out.write("AUV Propulsion: " + Planner.propulsion + " m/s");
+            out.newLine();
+            out.write("Grid Dimensions: " + grid.NTIME + " time, " + 
+                    grid.NDEPTH + " depth, " + grid.NLAT +
+                    " latitude, " + grid.NLON + " longitude.");
+            out.newLine();
             out.close();
-            writeMissionPlan.writeKMLMission(("test" + bestPathIndex + ".kml"),
-                  bestPath.path); 
+            writeMissionPlan.writeKMLMission((Planner.testFile + ".kml"),
+                  bestPath); 
             return bestPath;
                                  
         } catch (IOException e) {

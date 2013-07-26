@@ -25,27 +25,27 @@ public class Planner {
     // fileName is the name of the netCDF forecast data file
     // This can be a local file or an http address to pull the file 
     // from a THREDDS server 
-    static String fileName = "ca_subCA_fcst_2013070203.nc";
+    static String fileName = "ca_subCA_fcst_2013070803.nc";
     //static String fileName = "ca_subCA_das_2013061209.nc";
     //static String fileName = "http://west.rssoffice.com:8080/thredds/dodsC/pacific/CA3km-forecast/CA/ca_subCA_fcst_2013070203.nc";
     //static String fileName = "http://west.rssoffice.com:8080/thredds/dodsC/pacific/CA3km-forecast/CA/ca_subCA_errfcst_2013062403.nc";
     
     // errFileName is the netCDF forecast data from ensemble mode
     // Same ways to retrive file as for the forecast file
-    static String errFileName = "ca_subCA_errfcst_2013070103.nc";
+    static String errFileName = "ca_subCA_errfcst_2013070803.nc";
     // name of output text VectorMap file and KML file
-    static String outputFile = "test.txt";
+    static String outputFile = "test1.txt";
     static String KMLFile = "test1.kml";
     // name of test output file for testing
     static String testFile = "testOutput1.txt";
     
     // name of the search algorithm to use
     // Choices: AStar, DFS, Random, TEST
-    static String SearchAlg = "AStar";
+    static String SearchAlg = "TEST2";
     // Used for DFS, set to true to find a destination cell
     static boolean findDest = false;
     // Switch to false when testing without specified start location
-    static boolean useStart = true;
+    static boolean useStart = false;
     
     //start and end coordinates
     static double latStart = 33.2;
@@ -134,40 +134,9 @@ public class Planner {
     static int[] startIndex;
     static int[] destIndex;
     
-    static double avgTempErr;
-    static OceanGrid griddy;
+
     // name of file to show the grid coordinates
     static String gridFileName = "grid.kml";
-    final static double[] boundaries = {33.459999084472656, 241.41000366210938, 33.459999084472656,
-        241.44000244140625,33.459999084472656, 241.47000122070312,33.459999084472656, 241.5,33.43000030517578, 241.41000366210938,33.43000030517578, 241.44000244140625,33.43000030517578, 241.47000122070312,
-33.43000030517578, 241.5,33.43000030517578, 241.52999877929688,33.43000030517578, 241.55999755859375,33.43000030517578, 241.58999633789062,
-33.39999771118164, 241.5,33.39999771118164, 241.52999877929688,33.39999771118164, 241.55999755859375,33.39999771118164, 241.58999633789062,
-33.39999771118164, 241.6199951171875,33.39999771118164, 241.64999389648438,33.369998931884766, 241.5,33.369998931884766, 241.52999877929688,
-33.369998931884766, 241.55999755859375,33.369998931884766, 241.58999633789062,33.369998931884766, 241.6199951171875,33.369998931884766, 241.64999389648438,
-33.369998931884766, 241.67999267578125,33.34000015258789, 241.5,33.34000015258789, 241.52999877929688,33.34000015258789, 241.55999755859375,
-33.34000015258789, 241.58999633789062,33.34000015258789, 241.6199951171875,33.34000015258789, 241.64999389648438,33.34000015258789, 241.67999267578125,
-33.34000015258789, 241.7100067138672,33.30999755859375, 241.52999877929688,33.30999755859375, 241.55999755859375,33.30999755859375, 241.58999633789062,
-33.30999755859375, 241.6199951171875,33.30999755859375, 241.64999389648438,33.30999755859375, 241.67999267578125,33.30999755859375, 241.7100067138672,
-33.279998779296875, 241.64999389648438,33.279998779296875, 241.67999267578125,
-33.72999954223633, 241.58999633789062,33.72999954223633, 241.6199951171875,
-33.72999954223633, 241.64999389648438,
-33.72999954223633, 241.67999267578125,
-33.72999954223633, 241.7100067138672,
-33.72999954223633, 241.74000549316406,
-33.72999954223633, 241.77000427246094,
-33.72999954223633, 241.8000030517578,
-33.72999954223633, 241.8300018310547,
-33.72999954223633, 241.86000061035156,
-33.72999954223633, 241.88999938964844,
-33.72999954223633, 241.9199981689453,
-33.72999954223633, 241.9499969482422,
-33.72999954223633, 241.97999572753906,
-33.70000076293945, 241.67999267578125,
-33.70000076293945, 241.7100067138672,
-33.70000076293945, 241.74000549316406,
-33.70000076293945, 241.9499969482422,
-33.70000076293945, 241.97999572753906,
-33.66999816894531, 241.97999572753906};
     
         
     /* 
@@ -417,7 +386,7 @@ public class Planner {
             System.out.println(path.size() + " waypoints");
             writeMissionPlan.writeTextMission(outputFile, waypoints);
             if (!SearchAlg.equals("TEST") || !SearchAlg.equals("TEST2")) {
-                writeMissionPlan.writeKMLMission(KMLFile, waypoints);
+                writeMissionPlan.writeKMLMission(KMLFile, path);
             }
         }     
     }  

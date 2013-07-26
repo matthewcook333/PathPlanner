@@ -576,10 +576,10 @@ public class OceanGrid {
     
     public static void validateCells(OceanGrid grid) {
         ArrayList<double[]> latLonArray = new ArrayList<double[]>();
-        for (int i = 0; i < (Planner.boundaries.length/2); i++) {
+        for (int i = 0; i < (Boundary.boundaries.length/2); i++) {
             // find grid indices of the neighbors
-            double lat = Planner.boundaries[i * 2];
-            double lon = Planner.boundaries[i * 2 + 1];
+            double lat = Boundary.boundaries[i * 2];
+            double lon = Boundary.boundaries[i * 2 + 1];
             double[] boundaryArray = new double[2];
             boundaryArray[0] = lat;
             boundaryArray[1] = lon;
@@ -596,7 +596,12 @@ public class OceanGrid {
                     double lon = boundary[1];
                     if (currentCell.getLatValue() == lat 
                             && currentCell.getLonValue() == lon) {
-                        currentCell.validCell = false;
+                        for (int t = 0; t < grid.NTIME; ++t) {
+                            for (int d = 0; d < grid.NDEPTH; ++d) {
+                                OceanCell diffTimeSameCell = grid.getCell(t,d,i,j);
+                                diffTimeSameCell.validCell = false;
+                            }
+                        }
                     }
                 }
             }

@@ -37,8 +37,9 @@ public class AUV {
         double lonStart = currentCell.getLonValue();
         double latEnd = neighbor.getLatValue();
         double lonEnd = neighbor.getLonValue();
-        double xCurrent = currentCell.getU();
-        double yCurrent = currentCell.getV();
+        // made u go in y-direction to reconcile with lat lon directions
+        double yCurrent = currentCell.getU();
+        double xCurrent = currentCell.getV();
         double propulsion = Planner.propulsion;
         
         double dist = distance(latStart, lonStart, latEnd, lonEnd, 'K');
@@ -46,11 +47,12 @@ public class AUV {
         double xDist = distance(latStart, lonStart, latEnd, lonStart, 'K');
         double yDist = distance(latStart, lonStart, latStart, lonEnd, 'K');
         
+        
         if ((neighbor.getLat() - currentCell.getLat()) < 0) {
-            yDist = -yDist;
+            xDist = -xDist;
         }
         if ((neighbor.getLon() - currentCell.getLon()) < 0) {
-            xDist = -xDist;
+            yDist = -yDist;
         }
         
         // case where we are stationary

@@ -263,7 +263,8 @@ public class writeMissionPlan {
     }
     
 public static void writeKMLMission(String fileName,
-            ArrayList<OceanCell> path) {
+            OceanPath currentPath) {
+     ArrayList<OceanCell> path = currentPath.path;
      Writer out = null;
      try {    
          out = new BufferedWriter(new FileWriter(fileName));
@@ -349,7 +350,7 @@ public static void writeKMLMission(String fileName,
          out.write('\n');
          out.write("      <name>Mission Path</name>");
          out.write('\n');
-         out.write("      <description>AUV Path</description>");
+         out.write("      <description>" + currentPath + "</description>");
          out.write('\n');
          out.write("      <styleUrl>#yellowLineGreenPoly</styleUrl>");
          out.write('\n');
@@ -386,7 +387,7 @@ public static void writeKMLMission(String fileName,
              out.write('\n');
              out.write("      <name>" + (i+1) + "</name>");
              out.write('\n');
-             out.write("      <description>" + wp + "</description>");
+             out.write("      <description>" + wp.printData() + "</description>");
              out.write('\n');
              out.write("      <Point>");
              out.write('\n');               
@@ -483,9 +484,9 @@ public static void writeKMLGrid(String fileName, OceanGrid grid) {
                     OceanCell wp = grid.getCell(0, 0, i, j);
                     out.write("    <Placemark>");
                     out.write('\n');
-                    out.write("      <name>" /*+ wp.validCell*/ + "</name>");
+                    out.write("      <name>" + wp.validCell + "</name>");
                     out.write('\n');
-                    out.write("      <description>" + wp + "</description>");
+                    out.write("      <description>" + wp.printData() + "</description>");
                     out.write('\n');
                     out.write("      <Point>");
                     out.write('\n');               

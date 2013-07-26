@@ -125,12 +125,10 @@ public class OceanCell {
      */
     @Override
     public String toString() {
-        /* real one that gives location info, rather than indices
-            return "[" + latitude + "\u00B0, " + longitude + "\u00B0, " +
-                      depth + " m], Temperature:" + temperature + 
-                    " Score:" + gScore + ", Arrival Time"
-                    + " since " + time + ": " + timeArrived + " secs";
-                    */
+   return "Values: [" + time + " hours, " + depth + " m, " + latitude + "\u00B0 north, " + 
+           longitude + "\u00B0 east], Index: [" + timeIndex + ", " + 
+           depIndex + ", " + latIndex + ", " + lonIndex + "]";
+                    
         /*
         return "[" + latIndex + ", " + lonIndex + ", " +
                       depIndex + "], Temp Err:" + tempErr + 
@@ -139,7 +137,7 @@ public class OceanCell {
                 + " Temp: " + temperature + ". Salin: " + salinity 
                 + " Currents: " + u + " m/s, " + v + " m/s.";
              */   
-        return latitude + ", " + longitude + ", ";
+        //return latitude + ", " + longitude + ", ";
         
     }  
     
@@ -157,6 +155,29 @@ public class OceanCell {
     public String printIndex() {
         return "[" + latIndex + ", " + lonIndex + ", " +
                       depIndex + "]";
+    }  
+    
+       /*
+     * Method: printData
+     * 
+     * Input: None
+     * 
+     * Output: a String for the indices of the cell
+     * 
+     * Details: Method used to print information about the OceanCell.
+     *  Useful for storing information about cells.
+     * 
+     */
+    public String printData() {
+        return "Values: [" + time + " hours, " + depth + " m, " + latitude + "\u00B0 north, " + 
+           longitude + "\u00B0 east], Index: [" + timeIndex + ", " + 
+           depIndex + ", " + latIndex + ", " + lonIndex + "], "
+                + "Score:" + gScore + ", Arrival Time"
+                    + " since " + time + ": " + timeArrived + " secs,"
+                + " Temp: " + temperature + "\u00B0 C. Salin: " + salinity 
+                + " ROMS Unit, Currents: " + u + " m/s, " + v + " m/s."
+                + " TempErr: " + tempErr + ", SalinErr: " + salinErr 
+                + ", CurrentsErr: " + uErr + ", " + vErr + ".";
     }  
     
     /*

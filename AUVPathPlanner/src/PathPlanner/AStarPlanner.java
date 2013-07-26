@@ -48,6 +48,7 @@ public class AStarPlanner {
         double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
         double heuristicRate = (avgTempErr * Planner.weighting);
         double predScore = heuristicRate * predCells;
+        //System.out.println("average: " + avgTempErr);
         return predScore;
     }
     
@@ -127,9 +128,11 @@ public class AStarPlanner {
             int timeDiff = neighbor.getTime() - pathCell.getTime();
             if (pathCell.equals(neighbor) && timeDiff < 12) {
                 tempScore = decayScore * timeDiff;
+                //System.out.println("added score: " + tempScore);
                 return tempScore;
             }
         }
+       // System.out.println("added score: " + tempScore);
         return tempScore;
     }
     
@@ -185,6 +188,7 @@ public class AStarPlanner {
         while (!Q.isEmpty()) {
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
+            System.out.println(currentPath);
             
             // Record path if tracing paths in mathematica
             if (Planner.mathematica) {
@@ -216,7 +220,7 @@ public class AStarPlanner {
                     // impossible to reach cell, skip to next neighbor
                     if (timeTaken < 0 || !neighbor.validCell) {
                         continue;
-                    }                  
+                    }   
                     
                     // if we can travel to this neighbor within the time limit,
                     // create a new path including this neighbor and enqueue
