@@ -130,7 +130,7 @@ public class PathTests {
             double randomGscore = 0;
             double greedyGscore = 0;
             double gScore = 0;
-            int dounty = 0;
+            int invalidCount = 0;
             // index to represent which algorithm found the best path, -1 is random.
             // positive numbers correspond to Planner.weighting for A*
             double bestPathIndex = -1;         
@@ -140,12 +140,13 @@ public class PathTests {
                 for (int y = 5; y < 10; ++y) {
                     OceanCell startCell = grid.getCell(Planner.hourStartIndex, 0, x, y);
                     if (!startCell.validCell) {
-                        dounty++;
-                        System.out.println("dounty: " + dounty);
+                        invalidCount++;
+                        System.out.println("invalid start #:" + invalidCount);
                         continue;
                     }
                     int numTrials = 100;
-                    System.out.println("START CELL: " + startCell);
+                    System.out.println("START CELL: " + startCell.getLat() +
+                            ", " + startCell.getLon());
                     out.write("START CELL: " + startCell);
                     out.newLine();
                     //System.out.println("START PATH PLANNING");
