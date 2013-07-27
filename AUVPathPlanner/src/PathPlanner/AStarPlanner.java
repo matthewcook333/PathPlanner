@@ -185,11 +185,14 @@ public class AStarPlanner {
         startPath.timeElapsed = startTime;
         Q.add(startPath);
 
+        int counter = 0;
         // while we have unexplored paths, continue searching
         while (!Q.isEmpty()) {
+            counter++;
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
-            System.out.println(currentPath.fScore);
+            //System.out.println(currentPath.fScore);
+            //writeMissionPlan.writeKMLMission("debug" + counter + ".kml", currentPath);
             
             // Record path if tracing paths in mathematica
             if (Planner.mathematica) {
