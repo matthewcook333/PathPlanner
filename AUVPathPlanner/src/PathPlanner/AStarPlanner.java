@@ -121,18 +121,19 @@ public class AStarPlanner {
      */
     public static double addObjective(OceanPath currentPath, OceanCell neighbor) {
         double tempScore = neighbor.getTempErr();    
-        
-        double decayScore = neighbor.getTempErr()/12;
+        int timeLength = (Planner.hourEndIndex - 
+                Planner.hourStartIndex + 1);
+        double decayScore = neighbor.getTempErr() / timeLength;
         for (int i = currentPath.size()-1; i >= 0; --i) {
             OceanCell pathCell = currentPath.get(i);
             int timeDiff = neighbor.getTime() - pathCell.getTime();
-            if (pathCell.equals(neighbor) && timeDiff < 12) {
-                tempScore = decayScore * timeDiff;
+            if (pathCell.equals(neighbor)) {
+                int timePenalty = timeLength - timeDiff;
+                tempScore -= decayScore * timePenalty;
                 //System.out.println("added score: " + tempScore);
-                return tempScore;
             }
         }
-       // System.out.println("added score: " + tempScore);
+        //System.out.println("added score: " + tempScore);
         return tempScore;
     }
     
@@ -188,7 +189,7 @@ public class AStarPlanner {
         while (!Q.isEmpty()) {
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
-            System.out.println(currentPath);
+            System.out.println(currentPath.fScore);
             
             // Record path if tracing paths in mathematica
             if (Planner.mathematica) {
