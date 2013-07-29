@@ -180,7 +180,7 @@ public class OceanPath {
     public boolean contains(OceanCell cell) {
         // Checks whether the spatial cell is in the path (which means it 
         // could be from a different time)
-        for (int i = 0; i < this.size(); ++i) {
+        for (int i = this.size()-1; i >= 0 ; --i) {
             if (path.get(i).equals(cell)) {
                 return true;
             }

@@ -88,9 +88,19 @@ public class AStarPlanner {
                 heuristicRate += neighborReward;
             }
         } 
-        heuristicRate = (heuristicRate/neighbors.size()) * Planner.weighting;    
-        //System.out.println(heuristicRate);
-        double timeLeft = maxMissionTime - currentPath.timeElapsed + (Planner.hourStartIndex*Planner.timeInterval);
+        //System.out.println(heuristicRate + ", "  + neighbors.size());
+        // subtract 1 to not include current cell in average
+        heuristicRate = heuristicRate/(neighbors.size()-1);
+        double avgTempErr = grid.averageTempErr(currentCell.getTime());
+        //System.out.println(heuristicRate + ", " + avgTempErr);
+        //if (heuristicRate > avgTempErr) {
+            //System.out.println("abov average!" + Planner.weighting + ", " + currentPath.size());
+        //    heuristicRate = avgTempErr;
+        //}
+        //}
+        heuristicRate *= Planner.weighting; 
+        double timeLeft = maxMissionTime - currentPath.timeElapsed 
+                + (Planner.hourStartIndex*Planner.timeInterval);
         //System.out.println("time left is " + timeLeft);
         double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
         double predScore = heuristicRate * predCells;
@@ -116,21 +126,20 @@ public class AStarPlanner {
      *  reward for going there, depending on how long it takes. 
      *  This means that after 12 hours it can get the full reward again
      *  for revisiting the same cell spatially.
-     *  NOTE: this is a compounding decay, which means it can go negative
-     *  if the cell has been visited multiple times in last 12 hours.
      */
     public static double addObjective(OceanPath currentPath, OceanCell neighbor) {
-        double tempScore = neighbor.getTempErr();    
-        int timeLength = (Planner.hourEndIndex - 
-                Planner.hourStartIndex + 1);
+        double tempScore = neighbor.getTempErr(); 
+        double timeLength = 12;
+       // double timeLength = Planner.missionLength/Planner.timeInterval;
         double decayScore = neighbor.getTempErr() / timeLength;
         for (int i = currentPath.size()-1; i >= 0; --i) {
             OceanCell pathCell = currentPath.get(i);
             int timeDiff = neighbor.getTime() - pathCell.getTime();
-            if (pathCell.equals(neighbor)) {
-                int timePenalty = timeLength - timeDiff;
-                tempScore -= decayScore * timePenalty;
+            if (pathCell.equals(neighbor) && timeDiff < timeLength) {
+                double timePenalty = timeLength - timeDiff;
+                tempScore -= decayScore * timePenalty; 
                 //System.out.println("added score: " + tempScore);
+                return tempScore;
             }
         }
         //System.out.println("added score: " + tempScore);
@@ -185,14 +194,11 @@ public class AStarPlanner {
         startPath.timeElapsed = startTime;
         Q.add(startPath);
 
-        int counter = 0;
         // while we have unexplored paths, continue searching
         while (!Q.isEmpty()) {
-            counter++;
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
-            //System.out.println(currentPath.fScore);
-            //writeMissionPlan.writeKMLMission("debug" + counter + ".kml", currentPath);
+            //System.out.println(currentPath.gScore + ", " + (currentPath.fScore-currentPath.gScore));
             
             // Record path if tracing paths in mathematica
             if (Planner.mathematica) {
@@ -256,7 +262,7 @@ public class AStarPlanner {
                                 neighbor.getLatValue(), neighbor.getLonValue(), 'K');
                         newPath.gScore = currentPath.gScore 
                             + addObjective(currentPath, neighbor);
-                        newPath.fScore = newPath.gScore + objectiveEstimate(newPath, grid, maxMissionTime);
+                        newPath.fScore = newPath.gScore + objectiveEstimate2(newPath, grid, maxMissionTime);
                         Q.add(newPath);
                     }      
                 }

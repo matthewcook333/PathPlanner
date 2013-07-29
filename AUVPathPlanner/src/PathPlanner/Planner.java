@@ -279,7 +279,7 @@ public class Planner {
                     OceanCell neighbor = grid.getCell(t,z,newx,newy);
                     double timeTaken = AUV.travelTime(currentCell, neighbor);
                     // skip neighbors we cannot reach
-                    if (timeTaken < 0) {
+                    if (timeTaken < 0 || !neighbor.validCell) {
                         continue;
                     }
                     // check if the neighbor is in a different timestep
