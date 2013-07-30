@@ -6,6 +6,7 @@ package PathPlanner;
 
 import static PathPlanner.Planner.hourStartIndex;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -134,10 +135,10 @@ public class PathTests {
             // index to represent which algorithm found the best path, -1 is random.
             // positive numbers correspond to Planner.weighting for A*
             double bestPathIndex = -1;         
-            //for (int x = 0; x < grid.NLAT; ++x) {
-            //   for (int y = 0 ; y < grid.NLON; ++y) {
-            for (int x = 1; x < 2; ++x) {
-                for (int y = 10; y < 11; ++y) {
+            for (int x = 0; x < grid.NLAT; ++x) {
+               for (int y = 0 ; y < grid.NLON; ++y) {
+            //for (int x = 2; x < 10; ++x) {
+            //    for (int y = 2; y < 10; ++y) {
                     OceanCell startCell = grid.getCell(Planner.hourStartIndex, 0, x, y);
                     if (!startCell.validCell) {
                         invalidCount++;
@@ -171,6 +172,8 @@ public class PathTests {
 //                            bestStart = startCell;
 //                        }
 //                    }
+                    
+                    System.out.println("Random: " + currentPath);
                     out.write("Random: " + currentPath);
                     out.newLine();
                     Planner.weighting = 0;
@@ -179,6 +182,8 @@ public class PathTests {
                         
                         writeMissionPlan.writeKMLMission("test" + x + "-" + y + ".kml", currentPath);
                         
+                        System.out.println("Weighting:" + Planner.weighting 
+                                + ", " + currentPath);
                         out.write("Weighting:" + Planner.weighting
                                 + ", " + currentPath);
                         out.newLine();
@@ -216,6 +221,8 @@ public class PathTests {
                 out.newLine();
             }
             System.out.println(bestPath);
+            out.write(bestPath.toString());
+            out.newLine();
             System.out.println("WITH BEST START: " + bestStart);
             out.write("WITH BEST START: " + bestStart);
             out.newLine();

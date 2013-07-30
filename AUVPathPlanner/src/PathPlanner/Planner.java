@@ -25,19 +25,19 @@ public class Planner {
     // fileName is the name of the netCDF forecast data file
     // This can be a local file or an http address to pull the file 
     // from a THREDDS server 
-    static String fileName = "ca_subCA_fcst_2013070803.nc";
+    static String fileName = "ca_subCA_fcst_2013072903.nc";
     //static String fileName = "ca_subCA_das_2013061209.nc";
     //static String fileName = "http://west.rssoffice.com:8080/thredds/dodsC/pacific/CA3km-forecast/CA/ca_subCA_fcst_2013070203.nc";
     //static String fileName = "http://west.rssoffice.com:8080/thredds/dodsC/pacific/CA3km-forecast/CA/ca_subCA_errfcst_2013062403.nc";
     
     // errFileName is the netCDF forecast data from ensemble mode
     // Same ways to retrive file as for the forecast file
-    static String errFileName = "ca_subCA_errfcst_2013070803.nc";
+    static String errFileName = "ca_subCA_errfcst_2013072903.nc";
     // name of output text VectorMap file and KML file
     static String outputFile = "test1.txt";
     static String KMLFile = "test1.kml";
     // name of test output file for testing
-    static String testFile = "testOutput1.txt";
+    static String testFile = "testOutput6.txt";
     
     // name of the search algorithm to use
     // Choices: AStar, DFS, Random, TEST
@@ -266,7 +266,7 @@ public class Planner {
         int t = currentCell.getTime();
         int z = currentCell.getDepth();
         int x = currentCell.getLat();
-        int y = currentCell.getLon();         
+        int y = currentCell.getLon();       
             
         ArrayList<OceanCell> neighbors = new ArrayList<OceanCell>();
         for (int dirx = -(range); dirx <= range; ++dirx) {

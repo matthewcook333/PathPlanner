@@ -74,7 +74,7 @@ public class AStarPlanner {
         double heuristicRate = 0;
         OceanCell currentCell = currentPath.get(currentPath.size()-1);
         
-        ArrayList<OceanCell> neighbors = Planner.findNeighbors(currentPath, grid, 2);
+        ArrayList<OceanCell> neighbors = Planner.findNeighbors(currentPath, grid, 5);
         for (int i = 0; i < neighbors.size(); ++i) {
             OceanCell neighbor = neighbors.get(i);
             double neighborReward = neighbor.getTempErr();
@@ -104,32 +104,31 @@ public class AStarPlanner {
         
         
         double errRateChange = 0;
-        /*
+        
         for (int i = 1; i < currentPath.size(); ++i) {
             OceanCell cell = currentPath.get(i);
             OceanCell parentCell = currentPath.get(i-1);
             errRateChange += cell.getTempErr() - parentCell.getTempErr();
         }
         errRateChange = errRateChange / (currentPath.size()-1);
-        */
+        
         
         //if (currentPath.size() > 2) {
         //    OceanCell prevParentCell = currentPath.get(currentPath.size()-3);
         //    errRateChange += currentCell.getTempErr() - prevParentCell.getTempErr();
         //}
         //else {
-            OceanCell parentCell = currentPath.get(currentPath.size()-2);
-            errRateChange += currentCell.getTempErr() - parentCell.getTempErr();
+           // OceanCell parentCell = currentPath.get(currentPath.size()-2);
+           // errRateChange += currentCell.getTempErr() - parentCell.getTempErr();
         //}
         heuristicRate += errRateChange;
         heuristicRate *= Planner.weighting; 
         //System.out.println(heuristicRate + ", " + errRateChange);
         double timeLeft = maxMissionTime - currentPath.timeElapsed 
                 + (Planner.hourStartIndex*Planner.timeInterval);
-        //System.out.println("time left is " + timeLeft);
-        double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
+        //double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
+        double predCells = 15;
         double predScore = heuristicRate * predCells;
-        //System.out.println("predicted score left is " + predScore);
         return predScore;
     }
     

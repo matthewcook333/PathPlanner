@@ -121,6 +121,11 @@ public class RandomPlanner {
                 int randomIndex = generator.nextInt(neighbors.size());
                 OceanCell randomNeighbor = neighbors.get(randomIndex);
                 // update information about path
+                randomPath.distance += AUV.distance(
+                                currentCell.getLatValue(), 
+                                currentCell.getLonValue(),
+                                randomNeighbor.getLatValue(), 
+                                randomNeighbor.getLonValue(), 'K');
                 double timeTaken = AUV.travelTime(currentCell, randomNeighbor);
                 randomPath.gScore += 
                         AStarPlanner.addObjective(randomPath, randomNeighbor);
