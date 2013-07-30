@@ -113,14 +113,14 @@ public class AStarPlanner {
         errRateChange = errRateChange / (currentPath.size()-1);
         */
         
-        if (currentPath.size() > 2) {
-            OceanCell prevParentCell = currentPath.get(currentPath.size()-3);
-            errRateChange += currentCell.getTempErr() - prevParentCell.getTempErr();
-        }
-        else {
+        //if (currentPath.size() > 2) {
+        //    OceanCell prevParentCell = currentPath.get(currentPath.size()-3);
+        //    errRateChange += currentCell.getTempErr() - prevParentCell.getTempErr();
+        //}
+        //else {
             OceanCell parentCell = currentPath.get(currentPath.size()-2);
             errRateChange += currentCell.getTempErr() - parentCell.getTempErr();
-        }
+        //}
         heuristicRate += errRateChange;
         heuristicRate *= Planner.weighting; 
         //System.out.println(heuristicRate + ", " + errRateChange);
@@ -224,7 +224,7 @@ public class AStarPlanner {
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
             //System.out.println(currentPath.gScore + ", " + (currentPath.fScore-currentPath.gScore));
-            System.out.println(currentPath);
+            //System.out.println(currentPath);
             
             // Record path if tracing paths in mathematica
             if (Planner.mathematica) {
