@@ -37,7 +37,7 @@ public class Planner {
     static String outputFile = "test1.txt";
     static String KMLFile = "test1.kml";
     // name of test output file for testing
-    static String testFile = "testOutput6.txt";
+    static String testFile = "testOutput6fullTime2with5avgRate.txt";
     
     // name of the search algorithm to use
     // Choices: AStar, DFS, Random, TEST

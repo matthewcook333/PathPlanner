@@ -104,14 +104,23 @@ public class AStarPlanner {
         
         
         double errRateChange = 0;
-        
+        int i = 1;
+        while (i < 6 && i < currentPath.size()) {
+            OceanCell cell = currentPath.get(i);
+            OceanCell parentCell = currentPath.get(i-1);
+            errRateChange += cell.getTempErr() - parentCell.getTempErr();
+            ++i;
+        }
+        errRateChange = errRateChange / i;
+            
+        /*
         for (int i = 1; i < currentPath.size(); ++i) {
             OceanCell cell = currentPath.get(i);
             OceanCell parentCell = currentPath.get(i-1);
             errRateChange += cell.getTempErr() - parentCell.getTempErr();
         }
         errRateChange = errRateChange / (currentPath.size()-1);
-        
+        */
         
         //if (currentPath.size() > 2) {
         //    OceanCell prevParentCell = currentPath.get(currentPath.size()-3);
@@ -121,14 +130,29 @@ public class AStarPlanner {
            // OceanCell parentCell = currentPath.get(currentPath.size()-2);
            // errRateChange += currentCell.getTempErr() - parentCell.getTempErr();
         //}
-        heuristicRate += errRateChange;
-        heuristicRate *= Planner.weighting; 
-        //System.out.println(heuristicRate + ", " + errRateChange);
+        heuristicRate *= 1 + errRateChange;
+        
         double timeLeft = maxMissionTime - currentPath.timeElapsed 
                 + (Planner.hourStartIndex*Planner.timeInterval);
-        //double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
-        double predCells = 15;
-        double predScore = heuristicRate * predCells;
+        double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
+        double predImmCells = 20;
+        
+        if (predCells < predImmCells) {
+            predImmCells = predCells;
+            predCells = 0;
+        }
+        else {
+            predCells -= predImmCells;
+        }
+        double predImmScore = heuristicRate * predImmCells;
+        
+        double avgTempErr = grid.averageTempErr(currentCell.getTime());
+        double predScore = avgTempErr * predCells;
+        
+        //System.out.println(heuristicRate + ", " + errRateChange);  
+        
+        predScore += predImmScore;
+        predScore *= Planner.weighting; 
         return predScore;
     }
     
@@ -222,8 +246,9 @@ public class AStarPlanner {
         while (!Q.isEmpty()) {
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
-            //System.out.println(currentPath.gScore + ", " + (currentPath.fScore-currentPath.gScore));
-            //System.out.println(currentPath);
+            System.out.println(currentPath.gScore + ", " + (currentPath.fScore-currentPath.gScore));
+            //System.out.println(currentCell);
+            System.out.println(currentPath);
             
             // Record path if tracing paths in mathematica
             if (Planner.mathematica) {

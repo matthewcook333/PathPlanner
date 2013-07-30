@@ -518,19 +518,28 @@ public class OceanGrid {
      */
     public double averageTempErr(int currentTimeIndex) {
         double averageTempErr = 0;
-        for (int t = currentTimeIndex; t < NTIME; ++t) {
+        //count for the number of invalid cells
+        int invalidCount = 0;
+        for (int t = currentTimeIndex; t < currentTimeIndex + 1 /*NTIME*/; ++t) {
             double gridTempErr = 0;
             for (int d = 0; d < NDEPTH; ++d) {
                 for (int i = 0; i < NLAT; ++i) {
                     for (int j = 0; j < NLON; ++j) {
-                        gridTempErr += getCell(t, d, i, j).getTempErr();
+                        OceanCell cell = getCell(t, d, i, j);
+                        if (!cell.validCell) {
+                            invalidCount++;
+                        }
+                        else {
+                            gridTempErr += cell.getTempErr();
+                        }
                     }
                 }
             }
-            double timeTempErr = gridTempErr / (NDEPTH*NLAT*NLON);
+            double numCells = (NDEPTH*NLAT*NLON) - invalidCount;
+            double timeTempErr = gridTempErr / numCells ;
             averageTempErr += timeTempErr;
         }
-        averageTempErr = averageTempErr / (NTIME-currentTimeIndex);
+        averageTempErr = averageTempErr / 1;//(NTIME-currentTimeIndex);
         return averageTempErr;  
     }
     
