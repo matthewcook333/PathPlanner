@@ -134,10 +134,10 @@ public class PathTests {
             // index to represent which algorithm found the best path, -1 is random.
             // positive numbers correspond to Planner.weighting for A*
             double bestPathIndex = -1;         
-            for (int x = 0; x < grid.NLAT; ++x) {
-               for (int y = 0 ; y < grid.NLON; ++y) {
-            //for (int x = 0; x < 5; ++x) {
-            //    for (int y = 0; y < 5; ++y) {
+            //for (int x = 0; x < grid.NLAT; ++x) {
+            //   for (int y = 0 ; y < grid.NLON; ++y) {
+            for (int x = 1; x < 2; ++x) {
+                for (int y = 10; y < 11; ++y) {
                     OceanCell startCell = grid.getCell(Planner.hourStartIndex, 0, x, y);
                     if (!startCell.validCell) {
                         invalidCount++;

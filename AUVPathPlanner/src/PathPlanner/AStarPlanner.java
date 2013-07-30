@@ -93,14 +93,37 @@ public class AStarPlanner {
         // subtract 1 to not include current cell in average
         heuristicRate = heuristicRate/(neighbors.size()-1);
         
+        /*
         double avgTempErr = grid.averageTempErr(currentCell.getTime());
         //System.out.println(heuristicRate + ", " + avgTempErr);
         if (heuristicRate > avgTempErr) {
             //System.out.println("abov average!" + Planner.weighting + ", " + currentPath.size());
             heuristicRate = avgTempErr;
         }
+        */
         
+        
+        double errRateChange = 0;
+        /*
+        for (int i = 1; i < currentPath.size(); ++i) {
+            OceanCell cell = currentPath.get(i);
+            OceanCell parentCell = currentPath.get(i-1);
+            errRateChange += cell.getTempErr() - parentCell.getTempErr();
+        }
+        errRateChange = errRateChange / (currentPath.size()-1);
+        */
+        
+        if (currentPath.size() > 2) {
+            OceanCell prevParentCell = currentPath.get(currentPath.size()-3);
+            errRateChange += currentCell.getTempErr() - prevParentCell.getTempErr();
+        }
+        else {
+            OceanCell parentCell = currentPath.get(currentPath.size()-2);
+            errRateChange += currentCell.getTempErr() - parentCell.getTempErr();
+        }
+        heuristicRate += errRateChange;
         heuristicRate *= Planner.weighting; 
+        //System.out.println(heuristicRate + ", " + errRateChange);
         double timeLeft = maxMissionTime - currentPath.timeElapsed 
                 + (Planner.hourStartIndex*Planner.timeInterval);
         //System.out.println("time left is " + timeLeft);
@@ -201,6 +224,7 @@ public class AStarPlanner {
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
             //System.out.println(currentPath.gScore + ", " + (currentPath.fScore-currentPath.gScore));
+            System.out.println(currentPath);
             
             // Record path if tracing paths in mathematica
             if (Planner.mathematica) {

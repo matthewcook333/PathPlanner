@@ -512,13 +512,13 @@ public class OceanGrid {
      * 
      * Output: a double which is the average temperature uncertainty across grid
      * 
-     * Details: Averages the temperature uncertainty across the entire grid up
-     *  to the specified time.
+     * Details: Averages the temperature uncertainty across the entire grid 
+     *  from the specified time up to the end of the forecast.
      * 
      */
     public double averageTempErr(int currentTimeIndex) {
         double averageTempErr = 0;
-        for (int t = 0; t <= currentTimeIndex; ++t) {
+        for (int t = currentTimeIndex; t < NTIME; ++t) {
             double gridTempErr = 0;
             for (int d = 0; d < NDEPTH; ++d) {
                 for (int i = 0; i < NLAT; ++i) {
@@ -530,7 +530,7 @@ public class OceanGrid {
             double timeTempErr = gridTempErr / (NDEPTH*NLAT*NLON);
             averageTempErr += timeTempErr;
         }
-        averageTempErr = averageTempErr / (currentTimeIndex+1);
+        averageTempErr = averageTempErr / (NTIME-currentTimeIndex);
         return averageTempErr;  
     }
     

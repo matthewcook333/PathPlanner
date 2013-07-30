@@ -8,6 +8,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
@@ -479,12 +480,13 @@ public static void writeKMLGrid(String fileName, OceanGrid grid) {
          out.write("    </Placemark>");
          out.write('\n');          
          out.write('\n');
+         DecimalFormat myFormat = new DecimalFormat("0.000");
          for (int i = 0; i < grid.NLAT; ++i) {
                 for (int j = 0; j < grid.NLON; ++j) {
                     OceanCell wp = grid.getCell(0, 0, i, j);
                     out.write("    <Placemark>");
                     out.write('\n');
-                    out.write("      <name>" + wp.validCell + "</name>");
+                    out.write("      <name>" + myFormat.format(wp.getTempErr()) + "</name>");
                     out.write('\n');
                     out.write("      <description>" + wp.printData() + "</description>");
                     out.write('\n');
