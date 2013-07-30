@@ -9,6 +9,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  *
@@ -125,6 +126,9 @@ public class PathTests {
             OceanPath currentPath;
             OceanPath bestPath = null;
             OceanCell bestStart = null;
+            ArrayList<Double> randomScores = new ArrayList<Double>();
+            ArrayList<Double> greedyScores = new ArrayList<Double>();
+            ArrayList<Double> scores = new ArrayList<Double>();
             int randomCount = 0;
             int greedyCount = 0;
             int count = 0;
@@ -135,10 +139,10 @@ public class PathTests {
             // index to represent which algorithm found the best path, -1 is random.
             // positive numbers correspond to Planner.weighting for A*
             double bestPathIndex = -1;         
-            //for (int x = 0; x < grid.NLAT; ++x) {
-            //   for (int y = 0 ; y < grid.NLON; ++y) {
-            for (int x = 1; x < 2; ++x) {
-                for (int y = 10; y < 11; ++y) {
+            for (int x = 0; x < grid.NLAT; x=x+4) {
+                for (int y = 0; y < grid.NLON; y=y+4) {
+            //for (int x = 1; x < 2; ++x) {
+            //    for (int y = 1; y < 11; ++y) {;
                     OceanCell startCell = grid.getCell(Planner.hourStartIndex, 0, x, y);
                     if (!startCell.validCell) {
                         invalidCount++;
@@ -155,6 +159,7 @@ public class PathTests {
                     currentPath = RandomPlanner.Random(startCell, grid, missionLength);
                     randomCount++;
                     randomGscore += currentPath.gScore;
+                    randomScores.add(currentPath.gScore);
                     if (bestPath == null) {
                         bestPath = currentPath;
                     }
@@ -195,13 +200,23 @@ public class PathTests {
                         if (Planner.weighting == 0) {
                              greedyCount++;
                              greedyGscore += currentPath.gScore;
+                             greedyScores.add(currentPath.gScore);
                         }
                         if (Planner.weighting > 0) {
                             count++;
                             gScore += currentPath.gScore;
+                            scores.add(currentPath.gScore);
                         }
                         Planner.weighting += 1;
                     }
+                    // in order to increment by 4 correctly
+                    if (y == 0) {
+                        --y;
+                    }
+                }
+                // in order to increment by 4 correctly
+                if (x == 0) {
+                   --x;
                 }
             }
 
@@ -229,9 +244,30 @@ public class PathTests {
             System.out.println("----------------------------------------");
             System.out.println("AVERAGE STATISTICS");
             System.out.println("-----------------------------------------");
-            System.out.println("Average Score of Random in " + randomCount + " trials: " + (randomGscore/randomCount));
-            System.out.println("Average Score of Greedy in " + greedyCount + " trials: " + (greedyGscore/greedyCount));
-            System.out.println("Average Score of A* in " + count + " trials: " + (gScore/count));
+            double randomMean = (randomGscore/randomCount);
+            double greedyMean = (greedyGscore/greedyCount);
+            double mean = (gScore/count);        
+            System.out.println("Average Score of Random in " + randomCount + " trials: " + randomMean);
+            System.out.println("Average Score of Greedy in " + greedyCount + " trials: " + greedyMean );
+            System.out.println("Average Score of A* in " + count + " trials: " + mean);
+            double randomVar = 0;
+            double greedyVar = 0;
+            double var = 0;
+            while (!randomScores.isEmpty() && !greedyScores.isEmpty() &&
+                    !scores.isEmpty() ) {
+                double random = randomScores.remove(randomScores.size()-1);
+                double greedy = greedyScores.remove(greedyScores.size()-1);
+                double astar = scores.remove(scores.size()-1);
+                randomVar += Math.pow((random - randomMean), 2);
+                greedyVar += Math.pow((greedy - greedyMean), 2);
+                var += Math.pow((astar - mean), 2);
+            }
+            randomVar = randomVar / randomCount;
+            greedyVar = greedyVar / greedyCount;
+            var = var / count;      
+            System.out.println("Variance in Random: " + randomVar);
+            System.out.println("Variance in Greedy: " + greedyVar);
+            System.out.println("Variance in A*: " + var);
             out.write("----------------------------------------");
             out.newLine();
             out.write("AVERAGE STATISTICS");
@@ -243,6 +279,12 @@ public class PathTests {
             out.write("Average Score of Greedy in " + greedyCount + " trials: " + (greedyGscore/greedyCount));
             out.newLine();
             out.write("Average Score of A* in " + count + " trials: " + (gScore/count));
+            out.newLine();
+            out.write("Variance in Random: " + randomVar);
+            out.newLine();
+            out.write("Variance in Greedy: " + greedyVar);
+            out.newLine();
+            out.write("Variance in A*: " + var);
             out.newLine();
             out.write("------------------------------------------------");
             out.newLine();

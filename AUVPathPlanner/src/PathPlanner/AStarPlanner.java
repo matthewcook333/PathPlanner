@@ -70,7 +70,7 @@ public class AStarPlanner {
      *  is on the path.
      */
     public static double objectiveEstimate2(OceanPath currentPath, OceanGrid grid, double maxMissionTime) {
-        double timeLength = 12;
+        //double timeLength = 12;
         double heuristicRate = 0;
         OceanCell currentCell = currentPath.get(currentPath.size()-1);
         
@@ -79,10 +79,9 @@ public class AStarPlanner {
             OceanCell neighbor = neighbors.get(i);
             double neighborReward = neighbor.getTempErr();
             if (currentPath.contains(neighbor)) {
-                double timeDiff = neighbor.getTime() - currentCell.getTime();
-                if (timeDiff < 12) {
-                    neighborReward = (neighborReward * timeDiff) / timeLength;
-                }
+                double timeDiff = neighbor.getTime() - currentCell.getTime(); 
+                neighborReward = neighborReward * 
+                        (1 - Math.pow(Planner.discount, timeDiff));
                 heuristicRate += neighborReward;
             }
             else {
@@ -108,7 +107,7 @@ public class AStarPlanner {
         while (i < 6 && i < currentPath.size()) {
             OceanCell cell = currentPath.get(i);
             OceanCell parentCell = currentPath.get(i-1);
-            errRateChange += cell.getTempErr() - parentCell.getTempErr();
+            errRateChange += cell.getTempErr() / parentCell.getTempErr();
             ++i;
         }
         errRateChange = errRateChange / i;
@@ -130,7 +129,7 @@ public class AStarPlanner {
            // OceanCell parentCell = currentPath.get(currentPath.size()-2);
            // errRateChange += currentCell.getTempErr() - parentCell.getTempErr();
         //}
-        heuristicRate *= 1 + errRateChange;
+        heuristicRate *= errRateChange;
         
         double timeLeft = maxMissionTime - currentPath.timeElapsed 
                 + (Planner.hourStartIndex*Planner.timeInterval);
@@ -177,15 +176,17 @@ public class AStarPlanner {
      */
     public static double addObjective(OceanPath currentPath, OceanCell neighbor) {
         double tempScore = neighbor.getTempErr(); 
-        double timeLength = 12;
+        //double timeLength = 12;
        // double timeLength = Planner.missionLength/Planner.timeInterval;
-        double decayScore = neighbor.getTempErr() / timeLength;
+        //double decayScore = neighbor.getTempErr() / timeLength;
         for (int i = currentPath.size()-1; i >= 0; --i) {
             OceanCell pathCell = currentPath.get(i);
             int timeDiff = neighbor.getTime() - pathCell.getTime();
-            if (pathCell.equals(neighbor) && timeDiff < timeLength) {
-                double timePenalty = timeLength - timeDiff;
-                tempScore -= decayScore * timePenalty; 
+            if (pathCell.equals(neighbor)) {// && timeDiff < timeLength) {
+                //double timePenalty = timeLength - timeDiff;
+                //tempScore -=decayScore * timePenalty; 
+                tempScore = tempScore * 
+                        (1 - Math.pow(Planner.discount, timeDiff));
                 //System.out.println("added score: " + tempScore);
                 return tempScore;
             }
@@ -246,9 +247,9 @@ public class AStarPlanner {
         while (!Q.isEmpty()) {
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
-            System.out.println(currentPath.gScore + ", " + (currentPath.fScore-currentPath.gScore));
+            //System.out.println(currentPath.gScore + ", " + (currentPath.fScore-currentPath.gScore));
             //System.out.println(currentCell);
-            System.out.println(currentPath);
+            //System.out.println(currentPath);
             
             // Record path if tracing paths in mathematica
             if (Planner.mathematica) {
