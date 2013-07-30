@@ -70,6 +70,7 @@ public class AStarPlanner {
      *  is on the path.
      */
     public static double objectiveEstimate2(OceanPath currentPath, OceanGrid grid, double maxMissionTime) {
+        double timeLength = 12;
         double heuristicRate = 0;
         OceanCell currentCell = currentPath.get(currentPath.size()-1);
         
@@ -80,7 +81,7 @@ public class AStarPlanner {
             if (currentPath.contains(neighbor)) {
                 double timeDiff = neighbor.getTime() - currentCell.getTime();
                 if (timeDiff < 12) {
-                    neighborReward = (neighborReward * timeDiff) / 12;
+                    neighborReward = (neighborReward * timeDiff) / timeLength;
                 }
                 heuristicRate += neighborReward;
             }
@@ -91,13 +92,14 @@ public class AStarPlanner {
         //System.out.println(heuristicRate + ", "  + neighbors.size());
         // subtract 1 to not include current cell in average
         heuristicRate = heuristicRate/(neighbors.size()-1);
+        
         double avgTempErr = grid.averageTempErr(currentCell.getTime());
         //System.out.println(heuristicRate + ", " + avgTempErr);
-        //if (heuristicRate > avgTempErr) {
+        if (heuristicRate > avgTempErr) {
             //System.out.println("abov average!" + Planner.weighting + ", " + currentPath.size());
-        //    heuristicRate = avgTempErr;
-        //}
-        //}
+            heuristicRate = avgTempErr;
+        }
+        
         heuristicRate *= Planner.weighting; 
         double timeLeft = maxMissionTime - currentPath.timeElapsed 
                 + (Planner.hourStartIndex*Planner.timeInterval);
