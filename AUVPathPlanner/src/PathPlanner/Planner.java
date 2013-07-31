@@ -68,13 +68,13 @@ public class Planner {
     // Long Beach LAT LON Boundaries
     //  33deg 18' 39.66" N
     //final static double LOWLAT = 33.311017;
-    final static double LOWLAT = 33.15;
+    final static double LOWLAT = 33.12;
     // FOR 0,0 final static double LOWLAT = 32.03;
     //final static double LOWLAT = 31.6;
     
     
     // 33 deg 44' 18.58" N
-    final static double HIGHLAT = 33.738494;
+    final static double HIGHLAT = 33.71;
     //final static double HIGHLAT = 34;
     // 81x81 final static double HIGHLAT = 34.43;
     //final static double HIGHLAT = 32.5;
@@ -82,13 +82,13 @@ public class Planner {
     
     // 118 deg 27' 34.82" W
     //final static double LOWLON = 360-118.459672;
-    final static double LOWLON = 360 - 118.6;
+    final static double LOWLON = 360 - 118.68;
     // FOR 0,0 final static double LOWLON = 360-120;
     //final static double LOWLON = 360-120.5;
     
     
     // 118 deg 0' 57.54" W
-    final static double HIGHLON = 360-118.015983;
+    final static double HIGHLON = 360-118.12;
     // 81x81
     //final static double HIGHLON = 360-117.6;
     //final static double HIGHLON = 360-119.5;
@@ -284,6 +284,8 @@ public class Planner {
                     if (timeTaken < 0 || !neighbor.validCell) {
                         continue;
                     }
+                    /* NOT CURRENTLY USING NEW TIMESTEPS TO ACCURATELY COMPARE
+                     * AVERAGE OF VICINITY AND GRID
                     // check if the neighbor is in a different timestep
                     int time = (int)Math.floor(
                             (currentPath.timeElapsed + timeTaken)
@@ -300,6 +302,7 @@ public class Planner {
                                 neighbor.getDepth(), neighbor.getLat(),
                                 neighbor.getLon());
                     } 
+                    */
                     // since location is within boundaries, add this neighbor
                     neighbors.add(neighbor);
                 }  
