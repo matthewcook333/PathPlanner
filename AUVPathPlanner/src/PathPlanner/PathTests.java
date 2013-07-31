@@ -168,25 +168,14 @@ public class PathTests {
                         bestPath = currentPath;
                         bestStart = startCell;
                     }
-//                    for (int i = 0; i < numTrials; ++i) {
-//                        currentPath = RandomPlanner.Random(startCell, grid, missionLength);
-//                        randomCount++;
-//                        randomGscore += currentPath.gScore;
-//                        if (currentPath.fScore > bestPath.fScore) {
-//                            bestPath = currentPath;
-//                            bestStart = startCell;
-//                        }
-//                    }
                     
                     System.out.println("Random: " + currentPath);
                     out.write("Random: " + currentPath);
                     out.newLine();
                     Planner.weighting = 0;
                     while (Planner.weighting <= 1) {
-                        currentPath = AStarPlanner.AStar(startCell, grid, missionLength);
-                        
-                        writeMissionPlan.writeKMLMission("test" + x + "-" + y + ".kml", currentPath);
-                        
+                        currentPath = AStarPlanner.AStar(startCell, grid, missionLength);           
+                        //writeMissionPlan.writeKMLMission("test" + x + "-" + y + ".kml", currentPath);                        
                         System.out.println("Weighting:" + Planner.weighting 
                                 + ", " + currentPath);
                         out.write("Weighting:" + Planner.weighting
@@ -262,9 +251,9 @@ public class PathTests {
                 greedyVar += Math.pow((greedy - greedyMean), 2);
                 var += Math.pow((astar - mean), 2);
             }
-            randomVar = randomVar / randomCount;
-            greedyVar = greedyVar / greedyCount;
-            var = var / count;      
+            randomVar = randomVar / (randomCount-1);
+            greedyVar = greedyVar / (greedyCount-1);
+            var = var / (count-1);      
             System.out.println("Variance in Random: " + randomVar);
             System.out.println("Variance in Greedy: " + greedyVar);
             System.out.println("Variance in A*: " + var);
