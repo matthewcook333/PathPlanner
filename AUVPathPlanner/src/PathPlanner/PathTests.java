@@ -174,7 +174,10 @@ public class PathTests {
                     out.newLine();
                     Planner.weighting = 0;
                     while (Planner.weighting <= 1) {
-                        currentPath = AStarPlanner.AStar(startCell, grid, missionLength);           
+                        currentPath = AStarPlanner.AStar(startCell, grid, missionLength); 
+                        if (currentPath == null) {
+                            break;
+                        }
                         //writeMissionPlan.writeKMLMission("test" + x + "-" + y + ".kml", currentPath);                        
                         System.out.println("Weighting:" + Planner.weighting 
                                 + ", " + currentPath);

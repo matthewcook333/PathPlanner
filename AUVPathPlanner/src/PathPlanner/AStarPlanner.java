@@ -79,9 +79,11 @@ public class AStarPlanner {
             OceanCell neighbor = neighbors.get(i);
             double neighborReward = neighbor.getTempErr();
             if (currentPath.contains(neighbor)) {
+                /*
                 double timeDiff = neighbor.getTime() - currentCell.getTime(); 
                 neighborReward = neighborReward * 
                         (1 - Math.pow(Planner.discount, timeDiff));
+                */        
                 heuristicRate += neighborReward;
             }
             else {
@@ -90,18 +92,8 @@ public class AStarPlanner {
         } 
         //System.out.println(heuristicRate + ", "  + neighbors.size());
         // subtract 1 to not include current cell in average
-        heuristicRate = heuristicRate/(neighbors.size()-1);
-        
-        /*
-        double avgTempErr = grid.averageTempErr(currentCell.getTime());
-        //System.out.println(heuristicRate + ", " + avgTempErr);
-        if (heuristicRate > avgTempErr) {
-            //System.out.println("abov average!" + Planner.weighting + ", " + currentPath.size());
-            heuristicRate = avgTempErr;
-        }
-        */
-        
-        
+        heuristicRate = heuristicRate/(neighbors.size());
+      
         double errRateChange = 0;
         int i = 1;
         while (i < 6 && i < currentPath.size()) {
@@ -111,29 +103,12 @@ public class AStarPlanner {
             ++i;
         }
         errRateChange = errRateChange / i;
-            
-        /*
-        for (int i = 1; i < currentPath.size(); ++i) {
-            OceanCell cell = currentPath.get(i);
-            OceanCell parentCell = currentPath.get(i-1);
-            errRateChange += cell.getTempErr() - parentCell.getTempErr();
-        }
-        errRateChange = errRateChange / (currentPath.size()-1);
-        */
-        
-        //if (currentPath.size() > 2) {
-        //    OceanCell prevParentCell = currentPath.get(currentPath.size()-3);
-        //    errRateChange += currentCell.getTempErr() - prevParentCell.getTempErr();
-        //}
-        //else {
-           // OceanCell parentCell = currentPath.get(currentPath.size()-2);
-           // errRateChange += currentCell.getTempErr() - parentCell.getTempErr();
-        //}
-        
-        
+               
         double timeLeft = maxMissionTime - currentPath.timeElapsed 
                 + (Planner.hourStartIndex*Planner.timeInterval);
-        double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
+        //double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
+        double predCells = (Planner.propulsion / 3000) * timeLeft;
+        /*
         double predImmCells = 20;
         
         if (predCells < predImmCells) {
@@ -143,17 +118,15 @@ public class AStarPlanner {
         else {
             predCells -= predImmCells;
         }
-        
+        */
+        double predImmCells = predCells / 5;
+        predCells = predCells - predImmCells;
         
         
         
         double avgTempErr = grid.averageTempErr(currentCell.getTime());
         double predScore = avgTempErr * predCells;
         
-        //System.out.println(heuristicRate + ", " + errRateChange); 
-        if (avgTempErr < heuristicRate) {
-            heuristicRate = avgTempErr;
-        }
         heuristicRate *= errRateChange;
         double predImmScore = heuristicRate * predImmCells;
         predScore += predImmScore;
@@ -258,11 +231,12 @@ public class AStarPlanner {
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
             //System.out.println(currentPath.gScore + ", " + (currentPath.fScore-currentPath.gScore));
             
-            if (count > 2000 && (count % 100 == 0)) {
-              System.out.println(currentCell);
-              System.out.println(currentPath);
-            }
-            
+            /*
+             if (count > 20000) {
+                 System.out.println("too high!");
+                 return null;
+             }
+             * */
             // Record path if tracing paths in mathematica
             if (Planner.mathematica) {
                 Planner.recordInstance(currentPath.path, false, grid);
