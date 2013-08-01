@@ -520,7 +520,7 @@ public class OceanGrid {
         double averageTempErr = 0;
         //count for the number of invalid cells
         int invalidCount = 0;
-        for (int t = currentTimeIndex; t < currentTimeIndex + 1 /*NTIME*/; ++t) {
+        for (int t = currentTimeIndex; t <  NTIME; ++t) {
             double gridTempErr = 0;
             for (int d = 0; d < NDEPTH; ++d) {
                 for (int i = 0; i < NLAT; ++i) {
@@ -539,7 +539,7 @@ public class OceanGrid {
             double timeTempErr = gridTempErr / numCells ;
             averageTempErr += timeTempErr;
         }
-        averageTempErr = averageTempErr / 1;//(NTIME-currentTimeIndex);
+        averageTempErr = averageTempErr / (NTIME-currentTimeIndex);
         return averageTempErr;  
     }
     

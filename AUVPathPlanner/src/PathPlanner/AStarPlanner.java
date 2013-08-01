@@ -43,8 +43,8 @@ public class AStarPlanner {
     public static double objectiveEstimate(OceanPath currentPath, OceanGrid grid, double maxMissionTime) {
         OceanCell currentCell = currentPath.get(currentPath.size()-1);
         double avgTempErr = grid.averageTempErr(currentCell.getTime());
-        double timeLeft = maxMissionTime - currentPath.timeElapsed + 
-                (Planner.hourStartIndex*Planner.timeInterval);
+        double timeLeft = maxMissionTime - currentPath.timeElapsed;
+                // no longer need (Planner.hourStartIndex*Planner.timeInterval);
         double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
         double heuristicRate = (avgTempErr * Planner.weighting);
         double predScore = heuristicRate * predCells;
@@ -79,11 +79,11 @@ public class AStarPlanner {
             OceanCell neighbor = neighbors.get(i);
             double neighborReward = neighbor.getTempErr();
             if (currentPath.contains(neighbor)) {
-                /*
+                
                 double timeDiff = neighbor.getTime() - currentCell.getTime(); 
                 neighborReward = neighborReward * 
                         (1 - Math.pow(Planner.discount, timeDiff));
-                */        
+                      
                 heuristicRate += neighborReward;
             }
             else {
@@ -104,8 +104,7 @@ public class AStarPlanner {
         }
         errRateChange = errRateChange / i;
                
-        double timeLeft = maxMissionTime - currentPath.timeElapsed 
-                + (Planner.hourStartIndex*Planner.timeInterval);
+        double timeLeft = maxMissionTime - currentPath.timeElapsed;
         //double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
         double predCells = (Planner.propulsion / 3000) * timeLeft;
         /*
@@ -229,8 +228,10 @@ public class AStarPlanner {
             count++;
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
-            //System.out.println(currentPath.gScore + ", " + (currentPath.fScore-currentPath.gScore));
-            
+            if (start.getLat() == 0 && start.getLon() == 0) {
+            System.out.println(currentPath.gScore + ", " + (currentPath.fScore-currentPath.gScore));
+            System.out.println(currentCell);
+            }
             /*
              if (count > 20000) {
                  System.out.println("too high!");
