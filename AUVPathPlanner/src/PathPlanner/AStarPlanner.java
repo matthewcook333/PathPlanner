@@ -79,11 +79,11 @@ public class AStarPlanner {
             OceanCell neighbor = neighbors.get(i);
             double neighborReward = neighbor.getTempErr();
             if (currentPath.contains(neighbor)) {
-                
+                /*
                 double timeDiff = neighbor.getTime() - currentCell.getTime(); 
                 neighborReward = neighborReward * 
                         (1 - Math.pow(Planner.discount, timeDiff));
-                      
+                */    
                 heuristicRate += neighborReward;
             }
             else {
@@ -97,8 +97,8 @@ public class AStarPlanner {
         double errRateChange = 0;
         int i = 1;
         while (i < 6 && i < currentPath.size()) {
-            OceanCell cell = currentPath.get(i);
-            OceanCell parentCell = currentPath.get(i-1);
+            OceanCell cell = currentPath.get(currentPath.size()-i);
+            OceanCell parentCell = currentPath.get(currentPath.size()-i-1);
             errRateChange += cell.getTempErr() / parentCell.getTempErr();
             ++i;
         }
@@ -107,8 +107,8 @@ public class AStarPlanner {
         double timeLeft = maxMissionTime - currentPath.timeElapsed;
         //double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
         double predCells = (Planner.propulsion / 3000) * timeLeft;
-        /*
-        double predImmCells = 20;
+       
+        double predImmCells = 10;
         
         if (predCells < predImmCells) {
             predImmCells = predCells;
@@ -117,18 +117,18 @@ public class AStarPlanner {
         else {
             predCells -= predImmCells;
         }
-        */
-        double predImmCells = predCells / 5;
-        predCells = predCells - predImmCells;
+        
+        //double predImmCells = predCells / 5;
         
         
         
         double avgTempErr = grid.averageTempErr(currentCell.getTime());
         double predScore = avgTempErr * predCells;
         
-        heuristicRate *= errRateChange;
+        //heuristicRate *= errRateChange;
         double predImmScore = heuristicRate * predImmCells;
-        predScore += predImmScore;
+        
+       predScore += predImmScore;
         predScore *= Planner.weighting; 
         return predScore;
     }
@@ -228,10 +228,12 @@ public class AStarPlanner {
             count++;
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
+            /*
             if (start.getLat() == 0 && start.getLon() == 0) {
             System.out.println(currentPath.gScore + ", " + (currentPath.fScore-currentPath.gScore));
             System.out.println(currentCell);
             }
+            */
             /*
              if (count > 20000) {
                  System.out.println("too high!");

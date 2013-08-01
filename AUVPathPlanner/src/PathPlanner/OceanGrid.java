@@ -521,7 +521,7 @@ public class OceanGrid {
         //count for the number of invalid cells
         int invalidCount = 0;
         for (int t = currentTimeIndex; t <  NTIME; ++t) {
-            double gridTempErr = 0;
+            //double gridTempErr = 0;
             for (int d = 0; d < NDEPTH; ++d) {
                 for (int i = 0; i < NLAT; ++i) {
                     for (int j = 0; j < NLON; ++j) {
@@ -530,16 +530,17 @@ public class OceanGrid {
                             invalidCount++;
                         }
                         else {
-                            gridTempErr += cell.getTempErr();
+                            averageTempErr += cell.getTempErr();
                         }
                     }
                 }
             }
-            double numCells = (NDEPTH*NLAT*NLON) - invalidCount;
-            double timeTempErr = gridTempErr / numCells ;
-            averageTempErr += timeTempErr;
+            //double numCells = (NDEPTH*NLAT*NLON) - invalidCount;
+            //double timeTempErr = gridTempErr / numCells ;
+            //averageTempErr += timeTempErr;
         }
-        averageTempErr = averageTempErr / (NTIME-currentTimeIndex);
+        averageTempErr = averageTempErr / 
+                (((NTIME-currentTimeIndex)*NDEPTH*NLAT*NLON) - invalidCount);
         return averageTempErr;  
     }
     
