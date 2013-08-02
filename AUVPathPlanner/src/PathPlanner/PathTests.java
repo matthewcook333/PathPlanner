@@ -241,43 +241,72 @@ public class PathTests {
             double mean = (gScore/count);        
             System.out.println("Average Score of Random in " + randomCount + " trials: " + randomMean);
             System.out.println("Average Score of Greedy in " + greedyCount + " trials: " + greedyMean );
-            System.out.println("Average Score of A* in " + count + " trials: " + mean);
-            double randomVar = 0;
-            double greedyVar = 0;
-            double var = 0;
-            while (!randomScores.isEmpty() && !greedyScores.isEmpty() &&
-                    !scores.isEmpty() ) {
-                double random = randomScores.remove(randomScores.size()-1);
-                double greedy = greedyScores.remove(greedyScores.size()-1);
-                double astar = scores.remove(scores.size()-1);
-                randomVar += Math.pow((random - randomMean), 2);
-                greedyVar += Math.pow((greedy - greedyMean), 2);
-                var += Math.pow((astar - mean), 2);
-            }
-            randomVar = randomVar / (randomCount-1);
-            greedyVar = greedyVar / (greedyCount-1);
-            var = var / (count-1);      
-            System.out.println("Variance in Random: " + randomVar);
-            System.out.println("Variance in Greedy: " + greedyVar);
-            System.out.println("Variance in A*: " + var);
+            System.out.println("Average Score of A* in " + count + " trials: " + mean);   
             out.write("----------------------------------------");
             out.newLine();
             out.write("AVERAGE STATISTICS");
             out.newLine();
             out.write("-----------------------------------------");
             out.newLine();
-            out.write("Average Score of Random in " + randomCount + " trials: " + (randomGscore/randomCount));
+            out.write("Average Score of Random in " + randomCount + " trials: " + randomMean);
             out.newLine();
-            out.write("Average Score of Greedy in " + greedyCount + " trials: " + (greedyGscore/greedyCount));
+            out.write("Average Score of Greedy in " + greedyCount + " trials: " + greedyMean);
             out.newLine();
-            out.write("Average Score of A* in " + count + " trials: " + (gScore/count));
+            out.write("Average Score of A* in " + count + " trials: " + mean);
             out.newLine();
+            double randomVar = 0;
+            double greedyVar = 0;
+            double var = 0;
+            out.write("random scores = {");
+            while (!randomScores.isEmpty()) {
+                double random = randomScores.remove(randomScores.size()-1);
+                if (!randomScores.isEmpty()) {
+                    out.write(random + ", ");
+                }
+                else {
+                    out.write(random + "}");
+                }
+                randomVar += Math.pow((random - randomMean), 2);
+            }
+            out.newLine();
+            out.write("greedy scores = {");
+            while (!greedyScores.isEmpty()) {
+                double greedy = greedyScores.remove(greedyScores.size()-1);
+                if (!greedyScores.isEmpty()) {
+                    out.write(greedy + ", ");
+                }
+                else {
+                    out.write(greedy + "}");
+                }
+                greedyVar += Math.pow((greedy - greedyMean), 2);
+            }
+            out.newLine();
+            out.write("astar scores = {");            
+            while (!scores.isEmpty() ) {
+                double astar = scores.remove(scores.size()-1);
+                if (!scores.isEmpty()) {
+                    out.write(astar + ", ");
+                }
+                else {
+                    out.write(astar + "}");
+                }
+                var += Math.pow((astar - mean), 2);
+            }
+            out.newLine();
+            randomVar = randomVar / (randomCount-1);
+            greedyVar = greedyVar / (greedyCount-1);
+            var = var / (count-1);
             out.write("Variance in Random: " + randomVar);
             out.newLine();
             out.write("Variance in Greedy: " + greedyVar);
             out.newLine();
             out.write("Variance in A*: " + var);
             out.newLine();
+            // to look at without opening output file
+            System.out.println("Variance in Random: " + randomVar);
+            System.out.println("Variance in Greedy: " + greedyVar);
+            System.out.println("Variance in A*: " + var);
+            
             out.write("------------------------------------------------");
             out.newLine();
             out.write("Grid Boundaries: ");

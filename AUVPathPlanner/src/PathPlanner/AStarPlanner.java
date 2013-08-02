@@ -74,7 +74,7 @@ public class AStarPlanner {
         double heuristicRate = 0;
         OceanCell currentCell = currentPath.get(currentPath.size()-1);
         
-        ArrayList<OceanCell> neighbors = Planner.findNeighbors(currentPath, grid, 5);
+        ArrayList<OceanCell> neighbors = Planner.findNeighbors(currentPath, grid, grid.NLAT/4);
         for (int i = 0; i < neighbors.size(); ++i) {
             OceanCell neighbor = neighbors.get(i);
             double neighborReward = neighbor.getTempErr();
@@ -83,15 +83,13 @@ public class AStarPlanner {
                 double timeDiff = neighbor.getTime() - currentCell.getTime(); 
                 neighborReward = neighborReward * 
                         (1 - Math.pow(Planner.discount, timeDiff));
-                */    
+                */ 
                 heuristicRate += neighborReward;
             }
             else {
                 heuristicRate += neighborReward;
             }
         } 
-        //System.out.println(heuristicRate + ", "  + neighbors.size());
-        // subtract 1 to not include current cell in average
         heuristicRate = heuristicRate/(neighbors.size());
       
         double errRateChange = 0;
@@ -105,10 +103,9 @@ public class AStarPlanner {
         errRateChange = errRateChange / i;
                
         double timeLeft = maxMissionTime - currentPath.timeElapsed;
-        //double predCells = (currentPath.size()/currentPath.timeElapsed)*timeLeft;
         double predCells = (Planner.propulsion / 3000) * timeLeft;
        
-        double predImmCells = 10;
+        double predImmCells = grid.NLAT/2;
         
         if (predCells < predImmCells) {
             predImmCells = predCells;
@@ -117,18 +114,15 @@ public class AStarPlanner {
         else {
             predCells -= predImmCells;
         }
-        
         //double predImmCells = predCells / 5;
-        
-        
-        
+
         double avgTempErr = grid.averageTempErr(currentCell.getTime());
         double predScore = avgTempErr * predCells;
         
-        //heuristicRate *= errRateChange;
+        heuristicRate *= errRateChange;
         double predImmScore = heuristicRate * predImmCells;
         
-       predScore += predImmScore;
+        predScore += predImmScore;
         predScore *= Planner.weighting; 
         return predScore;
     }
