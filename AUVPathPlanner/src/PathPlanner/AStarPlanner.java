@@ -222,12 +222,10 @@ public class AStarPlanner {
             count++;
             OceanPath currentPath = (OceanPath) Q.poll();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
-            /*
-            if (start.getLat() == 0 && start.getLon() == 0) {
+
             System.out.println(currentPath.gScore + ", " + (currentPath.fScore-currentPath.gScore));
             System.out.println(currentCell);
-            }
-            */
+            
             /*
              if (count > 20000) {
                  System.out.println("too high!");
