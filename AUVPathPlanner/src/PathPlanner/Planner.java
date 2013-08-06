@@ -25,19 +25,19 @@ public class Planner {
     // fileName is the name of the netCDF forecast data file
     // This can be a local file or an http address to pull the file 
     // from a THREDDS server 
-    static String fileName = "ca_subCA_fcst_2013072303.nc";
+    static String fileName = "ca_subCA_fcst_2013080103.nc";
     //static String fileName = "ca_subCA_das_2013061209.nc";
     //static String fileName = "http://west.rssoffice.com:8080/thredds/dodsC/pacific/CA3km-forecast/CA/ca_subCA_fcst_2013070203.nc";
     //static String fileName = "http://west.rssoffice.com:8080/thredds/dodsC/pacific/CA3km-forecast/CA/ca_subCA_errfcst_2013062403.nc";
     
     // errFileName is the netCDF forecast data from ensemble mode
     // Same ways to retrive file as for the forecast file
-    static String errFileName = "ca_subCA_errfcst_2013072303.nc";
+    static String errFileName = "ca_subCA_errfcst_2013080103.nc";
     // name of output text VectorMap file and KML file
-    static String outputFile = "test2.txt";
-    static String KMLFile = "test2.kml";
+    static String outputFile = "test9.txt";
+    static String KMLFile = "test9.kml";
     // name of test output file for testing
-    static String testFile = "testOutput2.txt";
+    static String testFile = "testOutput9.txt";
     
     // name of the search algorithm to use
     // Choices: AStar, DFS, Random, TEST
@@ -61,7 +61,7 @@ public class Planner {
     static double discount = 0.9;
     
     // maximum length of the mission in seconds.
-    static double missionLength = 259200;
+    static double missionLength = 45000;
     // propulsion of the AUV in m/s
     static double propulsion = 1.3;
     
@@ -88,7 +88,7 @@ public class Planner {
     
     
     // 118 deg 0' 57.54" W
-    final static double HIGHLON = 360-118.12;
+    final static double HIGHLON = 360-118.11;
     // 81x81
     //final static double HIGHLON = 360-117.6;
     //final static double HIGHLON = 360-119.5;

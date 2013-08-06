@@ -480,10 +480,13 @@ public static void writeKMLGrid(String fileName, OceanGrid grid) {
          out.write("    </Placemark>");
          out.write('\n');          
          out.write('\n');
-         DecimalFormat myFormat = new DecimalFormat("0.000");
+         DecimalFormat myFormat = new DecimalFormat(".00");
          for (int i = 0; i < grid.NLAT; ++i) {
                 for (int j = 0; j < grid.NLON; ++j) {
                     OceanCell wp = grid.getCell(72, 0, i, j);
+                    if (!wp.validCell) {
+                        continue;
+                    }
                     out.write("    <Placemark>");
                     out.write('\n');
                     // can change to this for debugging boundaries
@@ -507,6 +510,7 @@ public static void writeKMLGrid(String fileName, OceanGrid grid) {
                     out.write('\n');          
                 }
          }  
+         
          out.write("  </Document>");
          out.write('\n');
          out.write("</kml>");

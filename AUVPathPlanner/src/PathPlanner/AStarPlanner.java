@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.util.TreeSet;
 
 /**
  *
@@ -186,7 +187,7 @@ public class AStarPlanner {
         double startTime = Planner.hourStartIndex*timeInterval;
         double maxMissionTime = startTime + missionLength;
         //Planner.missionLength = maxMissionTime;
-        
+        /*
         // priority queue to hold the OceanPaths
         // The top of the queue is the OceanPath with the highest f score, 
         // which is the sum of the objective gathered so far with the heuristic
@@ -208,6 +209,27 @@ public class AStarPlanner {
                         }
                     }
         });
+        * */
+        TreeSet<OceanPath> Q = new TreeSet<OceanPath>(
+                new Comparator<OceanPath>() {
+                    @Override
+                    public int compare(OceanPath c1, OceanPath c2) {
+                        double diff = c1.fScore - c2.fScore;
+                        if (diff < 0) {
+                            // make 1 for maximum, -1 for minimum
+                            return 1;
+                        }
+                        else if (diff > 0) {
+                            return -1;
+                        }
+                        else {
+                            return 0;
+                        }
+                    }
+        });
+        
+        
+        
         
         // create the start OceanPath to enqueue
         OceanPath startPath = new OceanPath();
@@ -220,12 +242,23 @@ public class AStarPlanner {
         // while we have unexplored paths, continue searching
         while (!Q.isEmpty()) {
             count++;
-            OceanPath currentPath = (OceanPath) Q.poll();
+            //OceanPath currentPath = (OceanPath) Q.poll();
+            OceanPath currentPath = (OceanPath) Q.pollFirst();
             OceanCell currentCell = currentPath.get(currentPath.size()-1);
-
-            System.out.println(currentPath.gScore + ", " + (currentPath.fScore-currentPath.gScore));
-            System.out.println(currentCell);
             
+            while (Q.size() > 2000000) {
+                for (int i = 0; i < 10000; ++i) {
+                    Q.pollLast();
+                }
+            }
+
+            if (count % 500000 == 0) {
+                System.out.println("Count: " + count);
+            }
+            //System.out.println(currentPath.gScore + ", " + (currentPath.fScore-currentPath.gScore));
+            //System.out.println(currentPath.fScore);
+            //System.out.println(currentCell);
+            //System.out.println(Q.size());
             /*
              if (count > 20000) {
                  System.out.println("too high!");
@@ -309,6 +342,9 @@ public class AStarPlanner {
                 }
                 // Fill the correct information into the OceanCells in the path
                 currentPath.recordData(grid, maxMissionTime);
+                if (Q.size() > 100000) {
+                    System.out.println("Queue size: " + Q.size());                          
+                }
                 return currentPath;
             }
         }   
