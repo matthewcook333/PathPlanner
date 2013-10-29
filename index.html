@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Pathplanner : AUVPathPlanner code" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Pathplanner</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/matthewcook333/PathPlanner">View on GitHub</a>
+
+          <h1 id="project_title">Pathplanner</h1>
+          <h2 id="project_tagline">AUVPathPlanner code</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/matthewcook333/PathPlanner/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/matthewcook333/PathPlanner/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="pathplanner" class="anchor" href="#pathplanner"><span class="octicon octicon-link"></span></a>PathPlanner</h1>
+
+<p>Author: Matt Cook</p>
+
+<p>This project is used for AUV Path Planning using information provided by the Jet Propulsion Laboratory's Regional Ocean
+Modeling System (ROMS). Multiple path planning algorithms are used in this project, and this README outlines how to run 
+the program and use the output from this project. Comments within each individual class are explained within the files.</p>
+
+<p>To run the program:
+The only file that should be changed to run the program is the Planner.java, as that is where the global variables are
+held that are changed to fit the parameters of the search desired. Most likely, the most important parameters to be 
+changed are:</p>
+
+<ul>
+<li>The netCDF files to be read</li>
+<li>Start Location</li>
+<li>Boundaries of the path planner (to search on a smaller grid)</li>
+<li>max time length of the mission</li>
+<li>name of output files that record the path
+The other parameters that can be changed are also explained in the Planner.java file.</li>
+</ul><p>The main method is in Planner.java, and by running the program will output two files to the local directory of
+the project.
+The first one of these files is a text file, which is the VectorMap mission file. VectorMap is the software
+used for planning waypoints for the Iver2 AUV to travel. This text file can be loaded directed into the Iver2
+for deployment.
+The second file is a KML file. KML files are used to display in Google Earth or NASA World Wind. When opened in
+one of these programs, this file displays the path planning boundaries, the path, and information about each
+waypoint along the path.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Pathplanner maintained by <a href="https://github.com/matthewcook333">matthewcook333</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
